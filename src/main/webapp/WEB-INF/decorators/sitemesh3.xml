@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemesh>
+	<mapping path="/author/addTarget" name="teacher" decorator="addCourse.jsp" />
+	<mapping path="/author/add" name="teacher" decorator="addCourse.jsp" />
+	<mapping path="/author/adBasicInformation" name="author" decorator="addCourse.jsp" />
+</sitemesh>
