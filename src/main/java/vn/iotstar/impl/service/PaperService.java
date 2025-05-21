@@ -20,12 +20,12 @@ public class PaperService implements IPaperService {
 		return paperDao.getAllPapers();
 	}
 	@Override
-	public List<Object[]> getBestPapers(int limit) 
+	public List<Paper> getBestPapers(int limit) 
 	{
 		return paperDao.getBestPapers(limit);
 	}
 	@Override
-	public List<Object[]> getTodayPapers(int limit)
+	public List<Paper> getTodayPapers(int limit)
 	{
 		return paperDao.getTodayPapers(limit);
 	}
@@ -38,5 +38,30 @@ public class PaperService implements IPaperService {
 	public void addPaper(Paper Paper)
 	{
 		paperDao.addPaper(Paper);
+	}
+	@Override
+	public List<Paper> getForeignRelatedPapers()
+	{
+		return paperDao.getForeignRelatedPapers();
+	}
+	@Override
+	public List<PaperType> getAllPaperTypes()
+	{
+		return paperDao.getAllPaperTypes();
+	}
+	@Override
+	public void addPaperType(PaperType PaperType) 
+	{ 
+		paperDao.addPaperType(PaperType);
+	}
+	@Override
+	public boolean updatePaperType(PaperType PaperType)
+	{
+		return paperDao.updatePaperType(PaperType);
+	}
+	@Override
+	public PaperType getPaperTypeById(int id)
+	{
+		return paperDao.getPaperTypeById(id);
 	}
 }

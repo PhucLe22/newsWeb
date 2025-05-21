@@ -1,8 +1,7 @@
 package vn.iotstar.entity;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-
+import java.sql.Date;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -54,14 +53,9 @@ public class PaperDetail implements Serializable {
 	@Column(name = "content", columnDefinition = "LONGTEXT")
 	private String paperContent;
 
-//	@Column(name = "learner_achievements", length = 500)
-//    private String learnerAchievements;
-
-//    @Column(name = "paper_learner", length = 500)
-//    private String paperLearner;
-
 	@OneToOne(mappedBy = "paperDetail")
 	private Paper paper;
 
-	private LocalDateTime createdAt;
+	@Column(name = "created_at")
+	private java.util.Date createdAt; 
 }

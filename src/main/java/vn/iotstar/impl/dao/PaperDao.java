@@ -1,8 +1,13 @@
 package vn.iotstar.impl.dao;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
+import edu.stanford.nlp.pipeline.CoreDocument;
+import edu.stanford.nlp.pipeline.CoreEntityMention;
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
@@ -50,13 +55,13 @@ public class PaperDao implements IPaperDao {
 		return Papers;
 	}
 
-	public List<Object[]> getBestPapers(int limit) {
+	@Override
+	public List<Paper> getBestPapers(int limit) {
 		EntityManager em = emf.createEntityManager();
-		List<Object[]> result = new ArrayList<>();
+		List<Paper> result = new ArrayList<>();
 		try {
-			String jpql = "SELECT r.paper, AVG(r.rate) as avgRate " + "FROM Review r " + "GROUP BY r.paper "
-					+ "HAVING AVG(r.rate) >= 4 " + "ORDER BY avgRate DESC";
-			result = em.createQuery(jpql, Object[].class).setMaxResults(limit).getResultList();
+			String jpql = "SELECT DISTINCT r.paper FROM Review r WHERE r.rate >= 4";
+			result = em.createQuery(jpql, Paper.class).setMaxResults(limit).getResultList();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -68,13 +73,18 @@ public class PaperDao implements IPaperDao {
 	}
 
 	@Override
-	public List<Object[]> getTodayPapers(int limit) {
+	public List<Paper> getTodayPapers(int limit) {
 		EntityManager em = emf.createEntityManager();
-		List<Object[]> result = new ArrayList<>();
+		List<Paper> result = new ArrayList<>();
 		try {
-			String jpql = "SELECT p, pd " + "FROM Paper p JOIN p.paperDetail pd "
-					+ "WHERE FUNCTION('DATE', pd.createdAt) = CURRENT_DATE " + "ORDER BY pd.createdAt DESC";
-			result = em.createQuery(jpql, Object[].class).setMaxResults(limit).getResultList();
+			LocalDateTime twoDaysAgo = LocalDateTime.now().minusDays(2);
+			LocalDateTime today = LocalDateTime.now();
+
+			String jpql = "SELECT p FROM Paper p JOIN p.paperDetail pd "
+					+ "WHERE pd.createdAt >= :twoDaysAgo AND pd.createdAt <= :today " + "ORDER BY pd.createdAt DESC";
+
+			result = em.createQuery(jpql, Paper.class).setParameter("twoDaysAgo", twoDaysAgo)
+					.setParameter("today", today).setMaxResults(limit).getResultList();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -84,70 +94,210 @@ public class PaperDao implements IPaperDao {
 		}
 		return result;
 	}
+
 	@Override
 	public Paper findById(int id) {
-	    EntityManager em = emf.createEntityManager();
-	    try {
-	        return em.find(Paper.class, id);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return null;
-	    } finally {
-	        em.close();
-	    }
+		EntityManager em = emf.createEntityManager();
+		try {
+			return em.find(Paper.class, id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+			em.close();
+		}
 	}
+
 	@Override
 	public void addPaper(Paper paper) {
-	    EntityManager em = JPAConfig.getEntityManager();
-	    EntityTransaction trans = em.getTransaction();
+		EntityManager em = JPAConfig.getEntityManager();
+		EntityTransaction trans = em.getTransaction();
+
+		try {
+			if (paper == null) {
+				throw new IllegalArgumentException("Paper cannot be null");
+			}
+
+			trans.begin();
+
+			// Lấy PaperType từ DB dựa trên id
+			int paperTypeId = paper.getPaperType().getId();
+			PaperType paperType = em.find(PaperType.class, paperTypeId);
+			if (paperType == null) {
+				throw new IllegalArgumentException("PaperType not found with id: " + paperTypeId);
+			}
+			paper.setPaperType(paperType);
+
+			// Lấy PaperDetail từ DB dựa trên id (nếu paperDetail đã có id)
+			PaperDetail paperDetail = paper.getPaperDetail();
+			if (paperDetail != null) {
+				if (paperDetail.getId() != 0) {
+					PaperDetail persistedPaperDetail = em.find(PaperDetail.class, paperDetail.getId());
+					if (persistedPaperDetail == null) {
+						throw new IllegalArgumentException("PaperDetail not found with id: " + paperDetail.getId());
+					}
+					paper.setPaperDetail(persistedPaperDetail);
+				} else {
+					// Nếu chưa có id thì lưu PaperDetail trước
+					em.persist(paperDetail);
+					// Giờ paperDetail có id rồi
+					paper.setPaperDetail(paperDetail);
+				}
+			} else {
+				throw new IllegalArgumentException("PaperDetail không được null");
+			}
+
+			// Lưu Paper
+			em.persist(paper);
+
+			trans.commit();
+		} catch (Exception e) {
+			if (trans.isActive()) {
+				trans.rollback();
+			}
+			e.printStackTrace();
+		} finally {
+			if (em != null && em.isOpen()) {
+				em.close();
+			}
+		}
+	}
+
+	public boolean isForeignRelated(String content) {
+		// Danh sách các quốc gia phổ biến (có thể mở rộng thêm)
+		String[] countries = { "Mỹ", "Trung Quốc", "Nhật Bản", "Hàn Quốc", "Pháp", "Anh", "Đức", "Ý", "Australia",
+				"Canada", "Ấn Độ", "Nga", "Brazil", "Hàn Quốc", "Thái Lan", "Liên Hợp Quốc", "Mexico", "Argentina",
+				"Indonesia", "Nigeria", "Nam Phi", "Saudi Arabia", "Italy", "Hà Lan", "Thụy Sĩ", "Bỉ", "Thụy Điển",
+				"Đan Mạch", "New Zealand", "Singapore", "Hồng Kông", "Malaysia", "Philippines", "Israel", "UAE",
+				"Chile", "Colombia", "Turkey", "Egypt", "Bangladesh", "Pakistan", "Nigeria", "South Korea", "Finland",
+				"Portugal", "Poland", "Romania", "Greece", "Peru", "Czech Republic", "Thế giới" };
+		// Kiểm tra xem bài viết có chứa tên quốc gia nào trong danh sách
+		String normalizedContent = content.toLowerCase();
+		for (String country : countries) {
+			if (normalizedContent.contains(country.toLowerCase())) {
+				return true; // Nếu có, bài viết có thể liên quan đến nước ngoài
+			}
+		}
+
+		return false; // Nếu không tìm thấy quốc gia nào, không liên quan đến nước ngoài
+	}
+
+	// Phương thức để lấy danh sách các Paper có nội dung liên quan đến nước ngoài
+	public List<Paper> getForeignRelatedPapers() {
+		EntityManager em = JPAConfig.getEntityManager();
+		List<Paper> foreignRelatedPapers = new ArrayList<>();
+
+		try {
+			// Truy vấn tất cả các Paper từ cơ sở dữ liệu
+			List<Paper> papers = em.createQuery("SELECT p FROM Paper p", Paper.class).getResultList();
+
+			// Kiểm tra xem bài viết có liên quan đến nước ngoài không
+			for (Paper paper : papers) {
+				String content = paper.getPaperDetail().getPaperContent(); // Giả sử Paper có trường content
+				if (isForeignRelated(content)) {
+					foreignRelatedPapers.add(paper); // Nếu có, thêm vào danh sách
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (em != null && em.isOpen()) {
+				em.close();
+			}
+		}
+
+		return foreignRelatedPapers; // Trả về danh sách các bài viết liên quan đến nước ngoài
+	}
+
+	@Override
+	public List<PaperType> getAllPaperTypes() {
+		EntityManager em = JPAConfig.getEntityManager();
+		List<PaperType> PaperTypes = new ArrayList<>();
+
+		try {
+			String sql = "SELECT ct FROM PaperType ct";
+			PaperTypes = em.createQuery(sql, PaperType.class).getResultList();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (em != null && em.isOpen()) {
+				em.close(); // Đảm bảo đóng EntityManager
+			}
+		}
+		return PaperTypes;
+	}
+
+	@Override
+	public void addPaperType(PaperType PaperType) {
+		EntityManager em = JPAConfig.getEntityManager();
+		EntityTransaction trans = em.getTransaction();
+
+		try {
+			if (PaperType == null) {
+				throw new IllegalArgumentException("PaperType cannot be null");
+			}
+
+			trans.begin();
+
+			// Lưu PaperType vào DB
+			em.persist(PaperType);
+
+			// Commit transaction
+			trans.commit();
+		} catch (Exception e) {
+			if (trans.isActive()) {
+				trans.rollback();
+			}
+			e.printStackTrace();
+		} finally {
+			if (em != null && em.isOpen()) {
+				em.close(); // Đảm bảo đóng EntityManager
+			}
+		}
+	}
+	@Override
+	public boolean updatePaperType(PaperType PaperType) {
+	    EntityManager enma = JPAConfig.getEntityManager();
+	    EntityTransaction trans = enma.getTransaction();
 
 	    try {
-	        if (paper == null) {
-	            throw new IllegalArgumentException("Paper cannot be null");
-	        }
-
 	        trans.begin();
 
-	        // Lấy PaperType từ DB dựa trên id
-	        int paperTypeId = paper.getPaperType().getId();
-	        PaperType paperType = em.find(PaperType.class, paperTypeId);
-	        if (paperType == null) {
-	            throw new IllegalArgumentException("PaperType not found with id: " + paperTypeId);
-	        }
-	        paper.setPaperType(paperType);
-
-	        // Lấy PaperDetail từ DB dựa trên id (nếu paperDetail đã có id)
-	        PaperDetail paperDetail = paper.getPaperDetail();
-	        if (paperDetail != null) {
-	            if (paperDetail.getId() != 0) {
-	                PaperDetail persistedPaperDetail = em.find(PaperDetail.class, paperDetail.getId());
-	                if (persistedPaperDetail == null) {
-	                    throw new IllegalArgumentException("PaperDetail not found with id: " + paperDetail.getId());
-	                }
-	                paper.setPaperDetail(persistedPaperDetail);
-	            } else {
-	                // Nếu chưa có id thì lưu PaperDetail trước
-	                em.persist(paperDetail);
-	                // Giờ paperDetail có id rồi
-	                paper.setPaperDetail(paperDetail);
-	            }
+	        // Kiểm tra xem có tồn tại không
+	        PaperType existingType = enma.find(PaperType.class, PaperType.getId());
+	        if (existingType != null) {
+	            existingType.setPaperTypeName(PaperType.getPaperTypeName());
+	            enma.merge(existingType);
 	        } else {
-	            throw new IllegalArgumentException("PaperDetail không được null");
+	            return false; // Không tìm thấy
 	        }
-
-	        // Lưu Paper
-	        em.persist(paper);
 
 	        trans.commit();
+	        return true;
 	    } catch (Exception e) {
 	        if (trans.isActive()) {
 	            trans.rollback();
 	        }
+	        e.printStackTrace();
+	        return false;
+	    } finally {
+	        enma.close();
+	    }
+	}
+	@Override
+	public PaperType getPaperTypeById(int id) {
+	    EntityManager em = JPAConfig.getEntityManager();
+	    PaperType PaperType = null;
+	    try {
+	        PaperType = em.find(PaperType.class, id); // Tìm theo khóa chính
+	    } catch (Exception e) {
 	        e.printStackTrace();
 	    } finally {
 	        if (em != null && em.isOpen()) {
 	            em.close();
 	        }
 	    }
+	    return PaperType;
 	}
 }

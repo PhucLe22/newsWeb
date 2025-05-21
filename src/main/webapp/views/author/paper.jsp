@@ -63,7 +63,6 @@ caption {
 			<c:forEach var="detail" items="${ListDetail}">
 				<p>${detail.paperContent}</p>
 			</c:forEach>
-
 		</tbody>
 	</table>
 	<form action="${pageContext.request.contextPath}/author/add"

@@ -115,7 +115,7 @@ input[type="submit"]:hover {
 
 		<div>
 			<label>Mô tả ảnh:</label> <input type="text"
-				name="PaperImageDescription" placeholder="Vd: http://default.jpg" required />
+				name="PaperImageDescription" placeholder="Ảnh nói về..." required />
 		</div>
 		<div>
 			<label>Video (nếu có):</label> <input type="text"

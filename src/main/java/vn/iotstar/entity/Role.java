@@ -14,9 +14,13 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @Entity
+@Getter
+@Setter
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(exclude = "users")

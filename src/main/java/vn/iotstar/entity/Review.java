@@ -53,6 +53,5 @@ public class Review implements Serializable{
     private User createdBy;
 	
 	@Column(name = "created_at")
-    private Date createdAt;
-
+	private java.util.Date createdAt; 
 }

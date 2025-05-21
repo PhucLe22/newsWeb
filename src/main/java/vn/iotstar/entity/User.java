@@ -25,7 +25,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -33,6 +32,7 @@ import lombok.ToString;
 @Table(name="users")
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQuery(name="User.findAll", query="SELECT u from User u")
+@Entity
 public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;

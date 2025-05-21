@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemesh>
-	<mapping path="/author/addTarget" name="teacher" decorator="addCourse.jsp" />
-	<mapping path="/author/add" name="teacher" decorator="addCourse.jsp" />
-	<mapping path="/author/adBasicInformation" name="author" decorator="addCourse.jsp" />
+	<mapping path="/author/addTarget" name="author"
+		decorator="addCourse.jsp" />
+	<mapping path="/author/add" name="author"
+		decorator="addCourse.jsp" />
+	<mapping path="/author/adBasicInformation" name="author"
+		decorator="addCourse.jsp" />
+	<mapping path="/user/hompage" name="user"
+		decorator="/views/WEB-INF/decorators/header.jsp" />
 </sitemesh>

@@ -28,7 +28,6 @@ public class PaperDetailController extends HttpServlet {
 	        return;
 	    }
 	    
-	    
 	    int paperId = Integer.parseInt(idStr);
 	    req.setAttribute("paperId", paperId);
 	    req.setAttribute("listPaper", listPaper);
