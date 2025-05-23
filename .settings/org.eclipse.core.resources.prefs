@@ -1,3 +1,5 @@
 eclipse.preferences.version=1
 encoding//src/main/webapp/WEB-INF/decorators/header.jsp=UTF-8
+encoding//src/main/webapp/views/admin/sidebar.jsp=UTF-8
+encoding//src/main/webapp/views/user/category.jsp=UTF-8
 encoding//src/main/webapp/views/user/test.jsp=UTF-8

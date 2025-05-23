@@ -256,41 +256,146 @@ public class PaperDao implements IPaperDao {
 			}
 		}
 	}
+
 	@Override
 	public boolean updatePaperType(PaperType PaperType) {
-	    EntityManager enma = JPAConfig.getEntityManager();
-	    EntityTransaction trans = enma.getTransaction();
+		EntityManager enma = JPAConfig.getEntityManager();
+		EntityTransaction trans = enma.getTransaction();
 
-	    try {
-	        trans.begin();
+		try {
+			trans.begin();
 
-	        // Kiểm tra xem có tồn tại không
-	        PaperType existingType = enma.find(PaperType.class, PaperType.getId());
-	        if (existingType != null) {
-	            existingType.setPaperTypeName(PaperType.getPaperTypeName());
-	            enma.merge(existingType);
-	        } else {
-	            return false; // Không tìm thấy
-	        }
+			// Kiểm tra xem có tồn tại không
+			PaperType existingType = enma.find(PaperType.class, PaperType.getId());
+			if (existingType != null) {
+				existingType.setPaperTypeName(PaperType.getPaperTypeName());
+				enma.merge(existingType);
+			} else {
+				return false; // Không tìm thấy
+			}
 
-	        trans.commit();
-	        return true;
-	    } catch (Exception e) {
-	        if (trans.isActive()) {
-	            trans.rollback();
-	        }
-	        e.printStackTrace();
-	        return false;
-	    } finally {
-	        enma.close();
-	    }
+			trans.commit();
+			return true;
+		} catch (Exception e) {
+			if (trans.isActive()) {
+				trans.rollback();
+			}
+			e.printStackTrace();
+			return false;
+		} finally {
+			enma.close();
+		}
 	}
+
+	@Override
+	public void updatePaper(Paper paper) {
+		EntityManager em = JPAConfig.getEntityManager();
+		EntityTransaction trans = em.getTransaction();
+
+		try {
+			if (paper == null || paper.getId() == 0) {
+				throw new IllegalArgumentException("Paper không hợp lệ hoặc chưa có ID để cập nhật");
+			}
+
+			trans.begin();
+
+			// Tìm Paper hiện có trong DB
+			Paper existingPaper = em.find(Paper.class, paper.getId());
+			if (existingPaper == null) {
+				throw new IllegalArgumentException("Không tìm thấy Paper với ID: " + paper.getId());
+			}
+
+			// Cập nhật PaperType nếu cần
+			int paperTypeId = paper.getPaperType().getId();
+			PaperType paperType = em.find(PaperType.class, paperTypeId);
+			if (paperType == null) {
+				throw new IllegalArgumentException("PaperType không tồn tại với ID: " + paperTypeId);
+			}
+			existingPaper.setPaperType(paperType);
+
+			// Cập nhật PaperDetail
+			PaperDetail newDetail = paper.getPaperDetail();
+			if (newDetail == null) {
+				throw new IllegalArgumentException("PaperDetail không được null");
+			}
+
+			if (newDetail.getId() != 0) {
+				// Nếu đã tồn tại PaperDetail
+				PaperDetail existingDetail = em.find(PaperDetail.class, newDetail.getId());
+				if (existingDetail == null) {
+					throw new IllegalArgumentException("Không tìm thấy PaperDetail với ID: " + newDetail.getId());
+				}
+				// Cập nhật nội dung chi tiết (nếu có)
+				existingDetail.setPaperContent(newDetail.getPaperContent());
+				existingPaper.setPaperDetail(existingDetail);
+			} else {
+				// Nếu là PaperDetail mới
+				em.persist(newDetail);
+				existingPaper.setPaperDetail(newDetail);
+			}
+
+			// Cập nhật các trường còn lại của Paper
+			existingPaper.setPaperName(paper.getPaperName());
+			existingPaper.setStatus(paper.getStatus());
+			em.merge(existingPaper);
+
+			trans.commit();
+		} catch (Exception e) {
+			if (trans.isActive()) {
+				trans.rollback();
+			}
+			e.printStackTrace();
+		} finally {
+			if (em != null && em.isOpen()) {
+				em.close();
+			}
+		}
+	}
+
 	@Override
 	public PaperType getPaperTypeById(int id) {
+		EntityManager em = JPAConfig.getEntityManager();
+		PaperType PaperType = null;
+		try {
+			PaperType = em.find(PaperType.class, id); // Tìm theo khóa chính
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (em != null && em.isOpen()) {
+				em.close();
+			}
+		}
+		return PaperType;
+	}
+
+	@Override
+	public List<FavoriteList> getFavoriteListByUserId(int userId) {
+		EntityManager em = JPAConfig.getEntityManager();
+		List<FavoriteList> favoriteList = new ArrayList<>();
+
+		try {
+			String jpql = "SELECT f FROM Favorite f WHERE f.user.id = :userId";
+			TypedQuery<FavoriteList> query = em.createQuery(jpql, FavoriteList.class);
+			query.setParameter("userId", userId);
+			favoriteList = query.getResultList();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (em != null && em.isOpen()) {
+				em.close();
+			}
+		}
+		return favoriteList;
+	}
+	@Override
+	public List<FavoriteList> getAllFavoriteList() {
 	    EntityManager em = JPAConfig.getEntityManager();
-	    PaperType PaperType = null;
+	    List<FavoriteList> favoriteLists = new ArrayList<>();
+
 	    try {
-	        PaperType = em.find(PaperType.class, id); // Tìm theo khóa chính
+	        String jpql = "SELECT f FROM Favorite f";
+	        TypedQuery<FavoriteList> query = em.createQuery(jpql, FavoriteList.class);
+	        favoriteLists = query.getResultList();
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    } finally {
@@ -298,6 +403,46 @@ public class PaperDao implements IPaperDao {
 	            em.close();
 	        }
 	    }
-	    return PaperType;
+
+	    return favoriteLists;
+	}
+
+
+	@Override
+	public boolean save(FavoriteList favoriteList) {
+		EntityManager em = JPAConfig.getEntityManager();
+		EntityTransaction trans = em.getTransaction();
+		boolean result = false;
+
+		try {
+			trans.begin();
+			em.persist(favoriteList); // Tự động lưu vào bảng phụ favorite_list_paper
+			trans.commit();
+			result = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (trans.isActive()) {
+				trans.rollback();
+			}
+		} finally {
+			em.close();
+		}
+
+		return result;
+	}
+	@Override
+	public Paper getPaperById(int id) {
+	    EntityManager em = JPAConfig.getEntityManager();
+	    Paper paper = null;
+	    try {
+	        paper = em.find(Paper.class, id);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        if (em != null && em.isOpen()) {
+	            em.close();
+	        }
+	    }
+	    return paper;
 	}
 }

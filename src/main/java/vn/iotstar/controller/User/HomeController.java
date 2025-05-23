@@ -1,6 +1,7 @@
 package vn.iotstar.controller.User;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.ServletException;
@@ -24,21 +25,31 @@ public class HomeController extends HttpServlet {
 		String url = req.getRequestURI();
 		req.setCharacterEncoding("UTF-8");
 		resp.setCharacterEncoding("UTF-8");
-		
+
+		// 1. Lấy danh sách loại bài báo
 		List<PaperType> paperType = paperTypeService.getAllPaperTypes();
 		req.setAttribute("paperType", paperType);
 
-		List<Paper> bestPapers = paperService.getBestPapers(3);
-		req.setAttribute("BestPapers", bestPapers);
-		List<Paper> todayPapers = paperService.getTodayPapers(3);
+		// 2. Lấy bài báo hôm nay nhưng lọc status != 0
+		List<Paper> todayPapersRaw = paperService.getTodayPapers(3);
+		List<Paper> todayPapers = new ArrayList<>();
+		for (Paper p : todayPapersRaw) {
+			if (p.getStatus() != 0) {
+				todayPapers.add(p);
+			}
+		}
 		req.setAttribute("TodayPapers", todayPapers);
 
-		List<Paper> foreignList = paperService.getForeignRelatedPapers();
-		req.setAttribute("ForeignPapers", foreignList);
-		System.out.println("Danh sách ForeignList:");
-		for (Paper paper : foreignList) {
-		    System.out.println(paper.getPaperName());
+		// 3. Lấy tất cả bài báo nhưng lọc status != 0
+		List<Paper> allPapersRaw = paperService.getAllPapers();
+		List<Paper> activePapers = new ArrayList<>();
+		for (Paper p : allPapersRaw) {
+			if (p.getStatus() != 0) {
+				activePapers.add(p);
+			}
 		}
+		req.setAttribute("paperList", activePapers);
+
 		if (url.contains("/user/homepage")) {
 			req.getRequestDispatcher("/views/user/index.jsp").forward(req, resp);
 		}

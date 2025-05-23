@@ -23,4 +23,9 @@ public class PaperDetailService implements IPaperDetailService {
 	{
 		paperDetailDao.addPaperDetail(paperDetail);
 	}
+	@Override
+	public void updatePaperDetail(PaperDetail paperDetail)
+	{
+		paperDetailDao.updatePaperDetail(paperDetail);
+	}
 }

@@ -3,134 +3,214 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Danh sách Bài Báo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản lý Bài Báo</title>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
 body {
-	font-family: Arial, sans-serif;
-	margin: 30px;
-	background-color: #f7f7f7;
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	margin: 20px;
+	background-color: #f4f6f8;
+	color: #333;
+	line-height: 1.6;
+}
+
+.container {
+	max-width: 960px;
+	margin: 20px auto;
+	padding: 30px;
+	background-color: #fff;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+	color: #007bff;
+	margin-bottom: 20px;
+	border-bottom: 2px solid #eee;
+	padding-bottom: 10px;
 }
 
 .paper-list {
-	margin-bottom: 20px;
-}
-
-.paper-item a {
-	display: block;
-	background-color: #007bff;
-	color: white;
-	padding: 10px 15px;
-	margin-bottom: 10px;
-	text-decoration: none;
-	border-radius: 5px;
-	width: fit-content;
-}
-
-.paper-item a:hover {
-	background-color: #0056b3;
+	margin-bottom: 30px;
 }
 
 .paper-item {
-	border: 1px solid #ccc;
+	background-color: #fff;
+	border: 1px solid #ddd;
 	border-radius: 6px;
-	padding: 8px;
-	margin-bottom: 10px;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-	transition: box-shadow 0.2s ease;
+	margin-bottom: 15px;
+	overflow: hidden;
 	display: flex;
 	align-items: center;
-	gap: 15px;
-	background-color: white;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
+	transition: transform 0.2s ease-in-out;
 }
 
 .paper-item:hover {
-	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+	transform: translateY(-2px);
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
 }
 
-.paper-item button {
+.paper-image {
+	width: 120px;
+	height: 90px;
+	object-fit: cover;
+	border-right: 1px solid #eee;
+	flex-shrink: 0;
+}
+
+.paper-details {
+	padding: 15px;
+	flex-grow: 1;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.paper-info button {
 	background: none;
 	border: none;
 	padding: 0;
 	cursor: pointer;
-	display: flex;
-	align-items: center;
-	width: 100%;
 	text-align: left;
+	width: 100%;
 }
 
-.paper-item img {
-	width: 120px;
-	height: 80px;
-	object-fit: cover;
-	border-radius: 4px;
-	flex-shrink: 0;
-	margin-right: 15px;
-}
-
-.paper-item span {
-	color: #003366;
-	font-size: 16px;
+.paper-info span {
+	color: #28a745;
 	font-weight: bold;
+	display: block;
+	margin-bottom: 5px;
+	font-size: 1.1em;
 }
 
-.add-button input {
+.paper-actions {
+	display: flex;
+	gap: 10px;
+}
+
+.action-button {
+	background-color: #007bff;
+	color: white;
+	border: none;
+	padding: 8px 12px;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 0.9em;
+	transition: background-color 0.2s ease;
+	text-decoration: none;
+}
+
+.action-button:hover {
+	background-color: #0056b3;
+}
+
+.edit-button {
+	background-color: #ffc107;
+}
+
+.edit-button:hover {
+	background-color: #e0a800;
+}
+
+.status-select {
+	padding: 8px;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+	font-size: 0.9em;
+	cursor: pointer;
+}
+
+.add-section {
+	margin-top: 30px;
+	padding: 20px;
+	background-color: #e9ecef;
+	border-radius: 6px;
+	text-align: center;
+}
+
+.add-button input[type="submit"] {
 	padding: 10px 20px;
-	font-size: 16px;
+	font-size: 1em;
 	background-color: #28a745;
 	color: white;
 	border: none;
 	border-radius: 5px;
 	cursor: pointer;
+	transition: background-color 0.2s ease;
 }
 
-.add-button input:hover {
+.add-button input[type="submit"]:hover {
 	background-color: #218838;
+}
+
+h3 {
+	color: #6c757d;
+	margin-top: 0;
+	margin-bottom: 15px;
 }
 </style>
 </head>
 <body>
-	<div class="paper-list">
-		<h2>Danh sách Bài Báo đã lưu</h2>
-		<c:forEach items="${ListPaper}" var="paper">
-			<div class="paper-item" style="margin-bottom: 10px;">
-				<form action="${pageContext.request.contextPath}/author/paperDetail"
-					method="get" style="margin: 0; padding: 0; border: none;">
-
-					<input type="hidden" name="id" value="${paper.id}" />
-
-					<div style="display: flex; align-items: center; gap: 15px;">
-						<button type="submit"
-							style="background: none; border: none; padding: 0; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 10px; flex-grow: 1;">
-							<!-- Hình ảnh bài viết -->
-							<img src="${paper.paperDetail.paperImage}"
-								alt="${paper.paperName}"
-								style="width: 100px; height: 70px; object-fit: cover; display: block;" />
-							<!-- Tên bài viết -->
-							<span style="color: blue; font-size: 14px;">${paper.paperName}</span>
-						</button>
-						<!-- Select trạng thái nằm ngang cùng ảnh và tên -->
-						<select name="status"
-							style="padding: 4px 8px; font-size: 14px; min-width: 100px;">
-							<option value="1" ${paper.status == 1 ? 'selected' : ''}>Public</option>
-							<option value="0" ${paper.status == 0 ? 'selected' : ''}>Private</option>
-						</select>
+	<div class="container">
+		<h2>
+			<i class="fas fa-newspaper"></i> Quản lý Bài Báo
+		</h2>
+		<div class="paper-list">
+			<c:forEach items="${ListPaper}" var="paper">
+				<div class="paper-item">
+					<img src="${paper.paperDetail.paperImage}" alt="${paper.paperName}"
+						class="paper-image" />
+					<div class="paper-details">
+						<div class="paper-info">
+							<form
+								action="${pageContext.request.contextPath}/user/paperDetail"
+								method="get" style="margin: 0;">
+								<input type="hidden" name="id" value="${paper.id}" />
+								<button type="submit">
+									<span class="paper-title">${paper.paperName}</span>
+								</button>
+							</form>
+						</div>
+						<div class="paper-actions">
+							<a
+								href="${pageContext.request.contextPath}/author/edit?id=${paper.id}"
+								class="action-button edit-button"><i class="fas fa-edit"></i>
+								Sửa</a>
+							<form
+								action="${pageContext.request.contextPath}/author/paper/status"
+								method="post">
+								<input type="hidden" name="paperId" value="${paper.id}" /> <select
+									name="status" class="status-select"
+									onchange="this.form.submit()">
+									<option value="1" ${paper.status == 1 ? 'selected' : ''}>Công
+										khai</option>
+									<option value="0" ${paper.status == 0 ? 'selected' : ''}>Riêng
+										tư</option>
+								</select>
+							</form>
+						</div>
 					</div>
+				</div>
+			</c:forEach>
+		</div>
 
+		<div class="add-section">
+			<h3>
+				<i class="fas fa-plus-circle"></i> Thêm Bài Báo Mới
+			</h3>
+			<div class="add-button">
+				<form action="${pageContext.request.contextPath}/author/add"
+					method="post">
+					<input type="submit" value="Thêm Bài Báo" />
 				</form>
 			</div>
-		</c:forEach>
-	</div>
-
-	<h3>Nếu chưa có thì bấm thêm bài báo!</h3>
-
-	<div class="add-button">
-		<form action="${pageContext.request.contextPath}/author/add"
-			method="post">
-			<input type="submit" value="Thêm Bài Báo" />
-		</form>
+		</div>
 	</div>
 </body>
 </html>

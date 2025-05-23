@@ -25,7 +25,8 @@ public class FavoriteList implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private LocalDateTime createdAt;
+	@Column(name = "created_at")
+	private java.util.Date createdAt; 
 
     // Danh sách yêu thích thuộc về 1 người dùng
     @ManyToOne

@@ -1,6 +1,7 @@
 package vn.iotstar.impl.dao;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.EntityManager;
@@ -13,152 +14,257 @@ import vn.iotstar.entity.Role;
 import vn.iotstar.entity.User;
 
 public class UserDao implements IUserDao {
-	
-	
+
 	@Override
 	public void insert(User user) {
-	    EntityManager em = JPAConfig.getEntityManager();
-	    EntityTransaction trans = em.getTransaction();
+		EntityManager em = JPAConfig.getEntityManager();
+		EntityTransaction trans = em.getTransaction();
 
-	    try {
-	        trans.begin();
-	        em.persist(user);
-	        trans.commit();
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        if (trans.isActive()) {
-	            trans.rollback();
-	        }
-	    } finally {
-	        em.close();
-	    }
+		try {
+			trans.begin();
+			em.persist(user);
+			trans.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (trans.isActive()) {
+				trans.rollback();
+			}
+		} finally {
+			em.close();
+		}
 	}
 
 	@Override
 	public boolean checkExistEmail(String email) {
 		EntityManager enma = JPAConfig.getEntityManager();
-		//EntityTransaction trans = enma.getTransaction();
+		// EntityTransaction trans = enma.getTransaction();
 		try {
-	        TypedQuery<Long> query = enma.createQuery(
-	            "SELECT COUNT(u) FROM User u WHERE u.email = :email", Long.class);
-	        query.setParameter("email", email);
-	        Long count = query.getSingleResult();
-	        return count > 0;
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return false;
-	    }
+			TypedQuery<Long> query = enma.createQuery("SELECT COUNT(u) FROM User u WHERE u.email = :email", Long.class);
+			query.setParameter("email", email);
+			Long count = query.getSingleResult();
+			return count > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
+
 	@Override
 	public boolean checkExistPhoneNumber(String phonenumber) {
 		EntityManager enma = JPAConfig.getEntityManager();
-		//EntityTransaction trans = enma.getTransaction();
+		// EntityTransaction trans = enma.getTransaction();
 		try {
-	        TypedQuery<Long> query = enma.createQuery(
-	            "SELECT COUNT(u) FROM User u WHERE u.phoneNumber = :phoneNumber", Long.class);
-	        query.setParameter("phoneNumber", phonenumber);
-	        Long count = query.getSingleResult();
-	        return count > 0;
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return false;
-	    }
+			TypedQuery<Long> query = enma.createQuery("SELECT COUNT(u) FROM User u WHERE u.phoneNumber = :phoneNumber",
+					Long.class);
+			query.setParameter("phoneNumber", phonenumber);
+			Long count = query.getSingleResult();
+			return count > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	@Override
 	public boolean updatePassword(String email, String newPassword) {
-	    EntityManager em = JPAConfig.getEntityManager();
-	    EntityTransaction trans = em.getTransaction();
+		EntityManager em = JPAConfig.getEntityManager();
+		EntityTransaction trans = em.getTransaction();
 
-	    try {
-	        trans.begin();
-	        
-	        // Sử dụng JPQL để cập nhật trực tiếp mật khẩu
-	        int updatedRows = em.createQuery(
-	                "UPDATE User u SET u.password = :newPassword WHERE u.email = :email")
-	                .setParameter("newPassword", newPassword)
-	                .setParameter("email", email)
-	                .executeUpdate();
-	        
-	        trans.commit();
-	        
-	        // Trả về true nếu có ít nhất 1 dòng được cập nhật
-	        return updatedRows > 0;
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        if (trans.isActive()) {
-	            trans.rollback();
-	        }
-	        return false;
-	    } finally {
-	        em.close();
-	    }
+		try {
+			trans.begin();
+
+			// Sử dụng JPQL để cập nhật trực tiếp mật khẩu
+			int updatedRows = em.createQuery("UPDATE User u SET u.password = :newPassword WHERE u.email = :email")
+					.setParameter("newPassword", newPassword).setParameter("email", email).executeUpdate();
+
+			trans.commit();
+
+			// Trả về true nếu có ít nhất 1 dòng được cập nhật
+			return updatedRows > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (trans.isActive()) {
+				trans.rollback();
+			}
+			return false;
+		} finally {
+			em.close();
+		}
 	}
 
 	@Override
 	public User findByEmailAndPassword(String email, String password) {
-	    EntityManager em = JPAConfig.getEntityManager();
-	    try {
-	        TypedQuery<User> query = em.createQuery(
-	            "SELECT u FROM User u WHERE u.email = :email AND u.password = :password", User.class);
-	        query.setParameter("email", email);
-	        query.setParameter("password", password);
+		EntityManager em = JPAConfig.getEntityManager();
+		try {
+			TypedQuery<User> query = em
+					.createQuery("SELECT u FROM User u WHERE u.email = :email AND u.password = :password", User.class);
+			query.setParameter("email", email);
+			query.setParameter("password", password);
 
-	        return query.getSingleResult();
-	    } catch (NoResultException e) {
-	        return null;
-	    } finally {
-	        em.close();
-	    }
+			return query.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		} finally {
+			em.close();
+		}
 	}
 
 	@Override
 	public User findByPhoneAndPassword(String phone, String password) {
-	    EntityManager em = JPAConfig.getEntityManager();
-	    try {
-	        TypedQuery<User> query = em.createQuery(
-	            "SELECT u FROM User u WHERE u.phoneNumber = :phone AND u.password = :password", User.class);
-	        query.setParameter("phone", phone);
-	        query.setParameter("password", password);
+		EntityManager em = JPAConfig.getEntityManager();
+		try {
+			TypedQuery<User> query = em.createQuery(
+					"SELECT u FROM User u WHERE u.phoneNumber = :phone AND u.password = :password", User.class);
+			query.setParameter("phone", phone);
+			query.setParameter("password", password);
 
-	        return query.getSingleResult();
-	    } catch (NoResultException e) {
-	        return null;
-	    } finally {
-	        em.close();
-	    }
+			return query.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		} finally {
+			em.close();
+		}
 	}
 
 	@Override
 	public User findById(int id) {
-	    EntityManager em = JPAConfig.getEntityManager();
-	    try {
-	        return em.find(User.class, id);
-	    } finally {
-	        em.close();
-	    }
+		EntityManager em = JPAConfig.getEntityManager();
+		try {
+			return em.find(User.class, id);
+		} finally {
+			em.close();
+		}
 	}
+
 	@Override
 	public Set<Role> getRolesByUserId(int userId) {
-	    EntityManager em = JPAConfig.getEntityManager();
-	    try {
-	        // Ép Hibernate fetch roles ngay khi query
-	        String jpql = "SELECT u FROM User u JOIN FETCH u.roles WHERE u.id = :userId";
-	        TypedQuery<User> query = em.createQuery(jpql, User.class);
-	        query.setParameter("userId", userId);
-	        
-	        User user = query.getSingleResult();
-	        System.out.println("domdom" + user);
-	        return user.getRoles(); // đã được fetch trong JOIN FETCH
+		EntityManager em = JPAConfig.getEntityManager();
+		try {
+			// Ép Hibernate fetch roles ngay khi query
+			String jpql = "SELECT u FROM User u JOIN FETCH u.roles WHERE u.id = :userId";
+			TypedQuery<User> query = em.createQuery(jpql, User.class);
+			query.setParameter("userId", userId);
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return new HashSet<>();
-	    } finally {
-	        em.close(); // Đóng sau khi dữ liệu đã được load
-	    }
+			User user = query.getSingleResult();
+			System.out.println("domdom" + user);
+			return user.getRoles(); // đã được fetch trong JOIN FETCH
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new HashSet<>();
+		} finally {
+			em.close(); // Đóng sau khi dữ liệu đã được load
+		}
 	}
 
+	@Override
+	public List<User> getAllUsers() {
+		EntityManager em = JPAConfig.getEntityManager();
+		try {
+			TypedQuery<User> query = em.createQuery("SELECT u FROM User u", User.class);
+			return query.getResultList();
+		} finally {
+			em.close();
+		}
+	}
 
-	
+	@Override
+	public void updateUser(User user) {
+		EntityManager em = JPAConfig.getEntityManager();
+		EntityTransaction trans = em.getTransaction();
+
+		try {
+			trans.begin();
+			em.merge(user); // merge cập nhật hoặc gộp user
+			trans.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (trans != null && trans.isActive()) {
+				trans.rollback();
+			}
+		} finally {
+			em.close();
+		}
+	}
+
+	@Override
+	public List<User> getUsersByRole(String role) {
+		EntityManager em = JPAConfig.getEntityManager();
+		List<User> users = null;
+		try {
+			String jpql = "SELECT u FROM User u WHERE u.role = :role";
+			TypedQuery<User> query = em.createQuery(jpql, User.class);
+			query.setParameter("role", role);
+			users = query.getResultList();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			em.close();
+		}
+		return users;
+	}
+
+	@Override
+	public void saveUser(User user) {
+		EntityManager em = JPAConfig.getEntityManager();
+		EntityTransaction transaction = null;
+
+		try {
+			transaction = em.getTransaction();
+			transaction.begin();
+
+			// Lấy Role managed entity theo ID
+			Role roleManaged = null;
+			if (user.getRole() != null && user.getRole().getId() > 0) {
+				roleManaged = em.find(Role.class, user.getRole().getId());
+			}
+
+			if (roleManaged == null) {
+				throw new RuntimeException(
+						"Role không tồn tại với id: " + (user.getRole() != null ? user.getRole().getId() : "null"));
+			}
+
+			user.setRole(roleManaged);
+
+			System.out.println("Sắp lưu user: " + user);
+
+			em.persist(user);
+
+			transaction.commit();
+			System.out.println("Lưu user thành công!");
+		} catch (Exception e) {
+			if (transaction != null && transaction.isActive()) {
+				transaction.rollback();
+			}
+			e.printStackTrace();
+			throw new RuntimeException("Không thể lưu user: " + e.getMessage());
+		} finally {
+			if (em.isOpen()) {
+				em.close();
+			}
+		}
+	}
+
+	@Override
+	public boolean savedUser(User user) {
+		EntityManager em = JPAConfig.getEntityManager();
+		EntityTransaction transaction = null;
+		try {
+			transaction = em.getTransaction();
+			transaction.begin();
+
+			em.persist(user);
+
+			transaction.commit();
+			return true;
+		} catch (Exception e) {
+			if (transaction != null && transaction.isActive()) {
+				transaction.rollback();
+			}
+			e.printStackTrace();
+			return false;
+		} finally {
+			em.close();
+		}
+	}
 }

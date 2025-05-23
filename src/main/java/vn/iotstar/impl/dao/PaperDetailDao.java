@@ -65,4 +65,22 @@ public class PaperDetailDao implements IPaperDetailDao {
 			}
 		}
 	}
+	@Override
+	public void updatePaperDetail(PaperDetail paperDetail) {
+		EntityManager em = JPAConfig.getEntityManager();
+		EntityTransaction trans = em.getTransaction();
+
+		try {
+			trans.begin();
+			em.merge(paperDetail);  // Cập nhật dựa trên primary key (id)
+			trans.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (trans.isActive()) {
+				trans.rollback();
+			}
+		} finally {
+			em.close();
+		}
+	}
 }

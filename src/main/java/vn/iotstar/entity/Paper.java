@@ -49,13 +49,6 @@ public class Paper implements Serializable {
 	@JoinColumn(name = "paper_detail_id", referencedColumnName = "id")
 	private PaperDetail paperDetail;
 
-//	@Column(name = "paper_price")
-//	private double paperPrice;
-
-	@ManyToOne
-	@JoinColumn(name = "author_id")
-	private Author author;
-
 	@OneToMany(mappedBy = "paper", cascade = CascadeType.ALL)
 	private Set<Review> review = new HashSet<>();
 

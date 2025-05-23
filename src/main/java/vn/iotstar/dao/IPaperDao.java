@@ -2,8 +2,8 @@ package vn.iotstar.dao;
 
 import java.util.List;
 
+import vn.iotstar.entity.FavoriteList;
 import vn.iotstar.entity.Paper;
-import vn.iotstar.entity.PaperDetail;
 import vn.iotstar.entity.PaperType;
 
 public interface IPaperDao {
@@ -28,5 +28,15 @@ public interface IPaperDao {
 	public boolean updatePaperType(PaperType PaperType);
 	
 	public PaperType getPaperTypeById(int id);
+	
+	public void updatePaper(Paper paper);
+	
+	public boolean save(FavoriteList favoriteList);
+	
+	public List<FavoriteList> getAllFavoriteList();
+	
+	public List<FavoriteList> getFavoriteListByUserId(int userId);
+	
+	public Paper getPaperById(int id);
 	
 }

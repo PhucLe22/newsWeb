@@ -35,11 +35,9 @@ public class AddPaperController extends HttpServlet {
 			resp.sendRedirect(req.getContextPath() + "/author/paperDetail?id=" + paperId);
 			return;
 		}
-
 		// Nếu không có id (nghĩa là truy cập thêm bài viết mới)
 		req.getRequestDispatcher("/views/author/addPaper.jsp").forward(req, resp);
 	}
-
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		req.setCharacterEncoding("UTF-8");
@@ -62,8 +60,7 @@ public class AddPaperController extends HttpServlet {
 		// giờ biến status có giá trị 1 (Public) hoặc 0 (Private)
 
 		if (paperName == null || paperName.trim().isEmpty()) {
-			req.setAttribute("message", "Tên bài viết không được để trống");
-			req.getRequestDispatcher("/views/author/addPaper.jsp").forward(req, resp);
+			req.getRequestDispatcher("/views/author/editPaper.jsp").forward(req, resp);
 			return;
 		}
 
@@ -72,7 +69,7 @@ public class AddPaperController extends HttpServlet {
 			paperTypeId = Integer.parseInt(paperTypeIdStr);
 		} catch (NumberFormatException e) {
 			req.setAttribute("message", "Loại bài viết không hợp lệ");
-			req.getRequestDispatcher("/views/author/addPaper.jsp").forward(req, resp);
+			req.getRequestDispatcher("/views/author/editPaper.jsp").forward(req, resp);
 			return;
 		}
 
@@ -112,7 +109,7 @@ public class AddPaperController extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 			req.setAttribute("message", "Lỗi khi thêm bài viết. Vui lòng thử lại.");
-			req.getRequestDispatcher("/views/author/addPaper.jsp").forward(req, resp);
+			req.getRequestDispatcher("/views/author/editPaper.jsp").forward(req, resp);
 		}
 	}
 }

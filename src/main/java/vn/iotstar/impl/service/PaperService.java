@@ -64,4 +64,29 @@ public class PaperService implements IPaperService {
 	{
 		return paperDao.getPaperTypeById(id);
 	}
+	@Override
+	public void updatePaper(Paper paper)
+	{
+		paperDao.updatePaper(paper);
+	}
+	@Override
+	public boolean save(FavoriteList favoriteList)
+	{
+		return paperDao.save(favoriteList);
+	}
+	@Override
+	public List<FavoriteList> getFavoriteListByUserId(int userId) 
+	{
+		return paperDao.getFavoriteListByUserId(userId);
+	}
+	@Override
+	public Paper getPaperById(int id)
+	{
+		return paperDao.getPaperById(id);
+	}
+	@Override
+	public List<FavoriteList> getAllFavoriteList()
+	{
+		return paperDao.getAllFavoriteList();
+	}
 }
