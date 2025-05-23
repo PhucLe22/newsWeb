@@ -37,6 +37,23 @@ public class PaperDao implements IPaperDao {
 		}
 		return PaperResults;
 	}
+	
+	@Override
+    public void insertComment(Comment comment) {
+        EntityManager em = JPAConfig.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            tx.begin();
+            em.persist(comment);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+    }
 
 	@Override
 	public List<Paper> getAllPapers() {
@@ -216,13 +233,13 @@ public class PaperDao implements IPaperDao {
 		List<PaperType> PaperTypes = new ArrayList<>();
 
 		try {
-			String sql = "SELECT ct FROM PaperType ct";
+			String sql = "SELECT ct from PaperType ct";
 			PaperTypes = em.createQuery(sql, PaperType.class).getResultList();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			if (em != null && em.isOpen()) {
-				em.close(); // Đảm bảo đóng EntityManager
+				em.close(); 
 			}
 		}
 		return PaperTypes;

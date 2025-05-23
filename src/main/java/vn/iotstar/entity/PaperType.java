@@ -32,7 +32,7 @@ public class PaperType implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-	private int id;
+	public int id;
 	
 	@Column(name = "paper_type_name", nullable = false, length = 255)
     private String paperTypeName;

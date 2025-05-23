@@ -26,32 +26,46 @@ public class CategoryListController extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		List<Paper> list = paperService.getAllPapers();
-		List<PaperType> listType = paperTypeService.getAllPaperTypes();
+	    List<Paper> list = paperService.getAllPapers();
+	    Map<Integer, List<Paper>> groupedByTypeId = new HashMap<>();
 
-		Map<PaperType, List<Paper>> groupedByType = new HashMap<>();
-		for (PaperType t : listType) {
-			groupedByType.put(t, new ArrayList<>());
-		}
-		for (Paper p : list) {
-			PaperType pt = p.getPaperType();
-			if (groupedByType.containsKey(pt)) {
-				groupedByType.get(pt).add(p);
-			}
-		}
-		for (Paper p : list) {
-			PaperType pt = p.getPaperType();
-			System.out.println("Paper: " + p.getPaperName() + " | Type: " + pt.getPaperTypeName());
+	    // Tạo biến tạm lưu theo loại
+	    List<Paper> currentGroup = new ArrayList<>();
+	    Integer currentTypeId = null;
 
-			if (groupedByType.containsKey(pt)) {
-				groupedByType.get(pt).add(p);
-			} else {
-				System.out.println("PaperType không tồn tại trong groupedByType: " + pt.getPaperTypeName());
-			}
-		}
+	    for (Paper p : list) {
+	        if (p.getStatus() != 1) continue; // ❗ Chỉ xử lý nếu status == 1
 
+	        Integer paperTypeId = p.getPaperType().getId();
 
-		req.setAttribute("groupedByType", groupedByType);
-		req.getRequestDispatcher("/views/user/category.jsp").forward(req, resp);
+	        // Nếu là lần đầu hoặc loại giống nhau thì tiếp tục add vào currentGroup
+	        if (currentTypeId == null || paperTypeId.equals(currentTypeId)) {
+	            currentGroup.add(p);
+	            currentTypeId = paperTypeId;
+	        } else {
+	            // Gặp loại mới -> đưa currentGroup vào map
+	            groupedByTypeId.put(currentTypeId, new ArrayList<>(currentGroup));
+	            currentGroup.clear();
+	            currentGroup.add(p);
+	            currentTypeId = paperTypeId;
+	        }
+	    }
+
+	    // Đưa group cuối cùng vào map nếu còn
+	    if (!currentGroup.isEmpty() && currentTypeId != null) {
+	        groupedByTypeId.put(currentTypeId, currentGroup);
+	    }
+
+	    // Lấy danh sách tất cả PaperType để hiển thị tên
+	    List<PaperType> listType = paperTypeService.getAllPaperTypes();
+	    Map<Integer, String> typeNames = new HashMap<>();
+	    for (PaperType t : listType) {
+	        typeNames.put(t.getId(), t.getPaperTypeName());
+	    }
+
+	    req.setAttribute("groupedByTypeId", groupedByTypeId);
+	    req.setAttribute("typeNames", typeNames);
+	    req.getRequestDispatcher("/views/user/category.jsp").forward(req, resp);
 	}
+
 }

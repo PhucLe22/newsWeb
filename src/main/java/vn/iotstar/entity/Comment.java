@@ -24,10 +24,6 @@ public class Comment implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    private Date createdAt;
-
-    private Date updatedAt;
-
     // Quan hệ: Comment được viết bởi 1 User
     @ManyToOne
     @JoinColumn(name = "user_id")

@@ -184,20 +184,21 @@ body {
 </style>
 </head>
 <body>
-	<c:forEach items="${groupedByType}" var="entry">
-		<c:set var="type" value="${entry.key}" />
+
+	<c:forEach items="${groupedByTypeId}" var="entry">
+		<c:set var="typeId" value="${entry.key}" />
 		<c:set var="papers" value="${entry.value}" />
+		<c:set var="typeName" value="${typeNames[typeId]}" />
 
 		<div class="container">
 			<div class="card" onclick="handleCardClick(this)">
 				<button class="fullscreen-button" onclick="toggleFullscreen(this)">&#x26F6;</button>
-				<h3 class="card-header">${type.paperTypeName}</h3>
+				<h3 class="card-header">${typeName}</h3>
 
-				<!-- Duyệt toàn bộ bài viết -->
 				<div class="article-row">
-					<c:forEach items="${papers}" var="paper" varStatus="status">
+					<c:forEach items="${papers}" var="paper">
 						<div class="article"
-							onclick="handleArticleClick('paper/detail?id=${paper.id}')">
+							onclick="handleArticleClick('paperDetail?id=${paper.id}')">
 							<img src="${paper.paperDetail.paperImage}"
 								alt="${paper.paperName}"
 								style="width: 100%; height: auto; max-height: 450px; object-fit: cover; margin-bottom: 10px; border-radius: 8px;" />
@@ -217,15 +218,12 @@ body {
 		const overlay = document.getElementById('fullscreenOverlay');
 
 		function handleCardClick(card) {
-			// Thêm hành động khi bấm vào thẻ (ví dụ: chuyển đến trang danh mục)
 			console.log('Đã bấm vào thẻ:', card.querySelector('h3').textContent);
-			// window.location.href = '/danh-muc/' + card.querySelector('h3').textContent.toLowerCase().replace(' ', '-');
 		}
 
 		function handleArticleClick(link) {
-			// Thêm hành động khi bấm vào từng trang báo
 			console.log('Đã bấm vào bài báo:', link);
-			// window.location.href = link;
+			window.location.href = link;
 		}
 
 		function toggleFullscreen(button) {
@@ -265,6 +263,5 @@ body {
 
 		overlay.addEventListener('click', closeFullscreen);
 	</script>
-
 </body>
 </html>

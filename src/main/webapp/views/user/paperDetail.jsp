@@ -210,10 +210,12 @@
 							<form
 								action="${pageContext.request.contextPath}/user/favoriteList"
 								method="post">
-								<input type="hidden" name="paperId" value="${i.id}" /> <label
-									for="newList">Tạo danh sách mới:</label> <input type="text"
+								<input type="hidden" name="paperId" value="${i.id}" /> 
+								<label for="newList">Tạo danh sách mới:</label> 
+								<input type="text"
 									id="newList" name="listName" placeholder="Tên danh sách mới" />
-								<label for="newDescription">Mô tả:</label> <input type="text"
+								<label for="newDescription">Mô tả:</label> 
+								<input type="text"
 									id="newDescription" name="description" placeholder="Mô tả" />
 								<button type="submit">Tạo và lưu</button>
 							</form>
@@ -245,30 +247,25 @@
 
 					<p>${i.paperDetail.paperContent}</p>
 
-					<h3>Bình luận</h3>
-					<form action="${pageContext.request.contextPath}/submitComment"
-						method="post" onsubmit="return validateCommentForm()">
-						<input type="hidden" name="paperId" value="${i.id}" />
-						<div>
-							<label for="name">Tên:</label><br /> <input type="text"
-								id="name" name="name" required
-								style="width: calc(100% - 20px); padding: 12px;" />
-						</div>
-						<div>
-							<label for="email">Email:</label><br /> <input type="email"
-								id="email" name="email" required
-								style="width: calc(100% - 20px); padding: 12px;" />
-						</div>
-						<div>
-							<label for="comment">Nội dung:</label><br />
-							<textarea id="comment" name="comment" rows="6" required
-								style="width: calc(100% - 20px); padding: 12px;"></textarea>
-						</div>
-						<div style="margin-top: 20px;">
-							<button type="submit" style="padding: 14px 22px;">Gửi
-								bình luận</button>
-						</div>
-					</form>
+					    <h3>Bình luận</h3>
+					<c:choose>
+					  <c:when test="${not empty sessionScope.user}">
+					    <form id="commentForm" onsubmit="return submitComment(event);">
+					      <input type="hidden" name="paperId" value="${i.id}" />
+					      <div>
+					        <label for="comment">Nội dung:</label><br />
+					        <textarea id="comment" name="comment" placeholder="Bình luận của bạn" rows="6" required
+					          style="width: calc(100% - 20px); padding: 12px;"></textarea>
+					      </div>
+					      <div style="margin-top: 20px;">
+					        <button type="submit" style="padding: 14px 22px;">Gửi bình luận</button>
+					      </div>
+					    </form>
+					  </c:when>
+					  <c:otherwise>
+					    <p>Vui lòng <a href="${pageContext.request.contextPath}/user/login?">đăng nhập</a> để bình luận.</p>
+					  </c:otherwise>
+					</c:choose>
 				</c:if>
 			</c:forEach>
 		</div>
@@ -289,6 +286,7 @@
 				</div>
 			</c:forEach>
 		</div>
+
 		<script>
 			function toggleFavoriteOptions(icon) {
 				const options = icon.nextElementSibling;
@@ -296,30 +294,47 @@
 				icon.classList.toggle('active');
 			}
 
-			function validateCommentForm() {
-				const name = document.getElementById('name').value.trim();
-				const email = document.getElementById('email').value.trim();
-				const comment = document.getElementById('comment').value.trim();
-
-				if (!name) {
-					alert('Vui lòng nhập tên.');
-					return false;
-				}
-				if (!email) {
-					alert('Vui lòng nhập email.');
-					return false;
-				}
-				const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-				if (!emailPattern.test(email)) {
-					alert('Email không đúng định dạng.');
-					return false;
-				}
-				if (!comment) {
+			function validateComment(comment) {
+				if (!comment || comment.trim() === '') {
 					alert('Vui lòng nhập nội dung bình luận.');
 					return false;
 				}
 				return true;
 			}
+
+			function submitComment(event) {
+				event.preventDefault();
+
+				const comment = document.getElementById('comment').value; // giả sử input textarea có id comment
+				const paperId = ${paperId}; // lấy trực tiếp biến paperId từ JSP
+
+				const formData = new URLSearchParams();
+				formData.append('comment', comment);
+				formData.append('paperId', paperId);  // thêm paperId vào formData
+
+				fetch('${pageContext.request.contextPath}/user/paperDetail', {
+				    method: 'POST',
+				    headers: {
+				        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+				    },
+				    body: formData.toString()
+				})
+				.then(response => response.json())  // chuyển sang json nếu server trả về json
+				.then(data => {
+				    if (data.error) {
+				        alert(data.error);
+				    } else {
+				        document.getElementById('comment').value = '';
+				        alert(data.message);
+				    }
+				})
+				.catch(error => {
+				    console.error('Lỗi khi gửi comment:', error);
+				});
+
+				return false;
+			}
 		</script>
+	</div>
 </body>
 </html>

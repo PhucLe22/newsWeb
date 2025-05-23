@@ -72,14 +72,14 @@ button:hover {
 		<h3>Chỉnh sửa</h3>
 
 		<form action="${pageContext.request.contextPath}/admin/edit"
-			method="get" class="form-box">
+			method="post" class="form-box">
 			<input type="hidden" name="id" value="${paperType.id}" />
 
 			<div>
-				<label for="paperTypeName">Tên loại bài báo:</label> <input
-					type="text" id="paperTypeName" name="paperTypeName"
-					placeholder="Nhập tên loại bài báo"
-					value="${paperType.paperTypeName}" required />
+				<label for="paperTypeName">Tên loại bài báo:</label>
+				<input type="text" id="paperTypeName" name="paperTypeName"
+					   placeholder="Nhập tên loại bài báo"
+					   value="${paperType.paperTypeName}" required />
 			</div>
 			<button type="submit">Cập nhật</button>
 		</form>

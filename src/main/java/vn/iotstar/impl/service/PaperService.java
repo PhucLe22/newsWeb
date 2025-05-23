@@ -25,6 +25,11 @@ public class PaperService implements IPaperService {
 		return paperDao.getBestPapers(limit);
 	}
 	@Override
+	public void saveComment(Comment comment) 
+	{
+		paperDao.insertComment(comment);
+	}
+	@Override
 	public List<Paper> getTodayPapers(int limit)
 	{
 		return paperDao.getTodayPapers(limit);
