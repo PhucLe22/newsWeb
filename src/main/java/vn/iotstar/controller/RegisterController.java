@@ -35,13 +35,14 @@ public class RegisterController extends HttpServlet {
 		String email = req.getParameter("email");
 		String password = req.getParameter("password");
 		String phone = req.getParameter("phone");
+		String avatarUrl = req.getParameter("avatarUrl");
 
 		User user = new User();
 		user.setFullname(fullname);
 		user.setEmail(email);
 		user.setPassword(password);
 		user.setPhoneNumber(phone);
-		user.setAvatarUrl("default-avatar.png"); // ảnh mặc định
+		user.setAvatarUrl(avatarUrl);
 		user.setActive(true);
 
 		try {

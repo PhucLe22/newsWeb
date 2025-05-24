@@ -66,21 +66,38 @@
 }
 
 .favorite-button-container {
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
 	position: relative;
+}
+
+.favorite-icon-wrapper {
+	display: inline-flex;
+	align-items: center;
+	cursor: pointer;
 }
 
 .favorite-icon {
 	font-size: 1.5em;
 	color: #aaa;
-	cursor: pointer;
-	transition: color 0.3s ease;
+	transition: color 0.3s ease, transform 0.2s ease-in-out;
 	padding: 8px;
 	border-radius: 50%;
 }
 
 .favorite-icon:hover, .favorite-icon.active {
 	color: #ff6f61; /* Màu khi hover hoặc đã active */
+	transform: scale(1.1);
+}
+
+.favorite-text {
+	margin-left: 8px;
+	color: #555;
+	transition: color 0.3s ease;
+}
+
+.favorite-icon-wrapper:hover .favorite-text {
+	color: #ff6f61;
 }
 
 .favorite-options {
@@ -93,8 +110,8 @@
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 	z-index: 10;
 	display: none; /* Ẩn ban đầu */
-	min-width: 150px;
-	padding: 10px;
+	min-width: 180px;
+	padding: 15px;
 	margin-top: 5px;
 }
 
@@ -102,9 +119,18 @@
 	display: block; /* Hiển thị khi được kích hoạt */
 }
 
+.favorite-options h3 {
+	font-size: 1.2em;
+	color: #333;
+	margin-top: 0;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #eee;
+	padding-bottom: 5px;
+}
+
 .favorite-options label {
 	display: block;
-	margin-bottom: 5px;
+	margin-bottom: 8px;
 	font-weight: normal;
 	color: #333;
 }
@@ -112,7 +138,7 @@
 .favorite-options input[type="text"] {
 	width: calc(100% - 12px);
 	padding: 8px;
-	margin-bottom: 10px;
+	margin-bottom: 12px;
 	border: 1px solid #ddd;
 	border-radius: 4px;
 	font-size: 1em;
@@ -121,21 +147,28 @@
 .favorite-options button {
 	background-color: #007bff;
 	color: white;
-	padding: 8px 12px;
+	padding: 10px 15px;
 	border: none;
 	border-radius: 4px;
 	cursor: pointer;
 	font-size: 1em;
 	transition: background-color 0.3s ease;
-	margin-top: 5px;
+	margin-top: 8px;
+	width: 100%;
+	box-sizing: border-box;
 }
 
 .favorite-options button:hover {
 	background-color: #0056b3;
 }
 
+.favorite-options hr {
+	border-top: 1px dashed #ccc;
+	margin: 15px 0;
+}
+
 .favorite-options .existing-list-item {
-	padding: 8px 0;
+	padding: 10px 0;
 	border-bottom: 1px solid #eee;
 }
 
@@ -186,16 +219,27 @@
 	color: #111;
 	transition: color 0.3s ease;
 	font-size: 1.1em;
+	display: flex;
+	align-items: center;
 }
 
 .related-item a:hover {
 	color: #003366;
+}
+
+.related-item img {
+	width: 80px;
+	height: 60px;
+	object-fit: cover;
+	margin-right: 10px;
+	border-radius: 4px;
 }
 </style>
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 <body>
+	<%@ include file="/views/header.jsp"%>
 	<div class="container">
 		<div class="main-content">
 			<c:forEach items="${listPaper}" var="i">
@@ -203,24 +247,27 @@
 					<h1>${i.paperName}</h1>
 
 					<div class="favorite-button-container">
-						<i class="fa-regular fa-bookmark favorite-icon"
-							onclick="toggleFavoriteOptions(this)"></i>
+						<div class="favorite-icon-wrapper"
+							onclick="toggleFavoriteOptions(this.querySelector('.favorite-icon'))">
+							<i class="fa-regular fa-bookmark favorite-icon"></i> <span
+								class="favorite-text">Lưu</span>
+						</div>
 						<div class="favorite-options" id="favoriteOptions-${i.id}">
-							<h3>Lưu</h3>
+							<h3>Tạo danh sách mới</h3>
 							<form
 								action="${pageContext.request.contextPath}/user/favoriteList"
-								method="get">
+								method="post">
 								<input type="hidden" name="paperId" value="${i.id}" /> <label
-									for="newList">Tạo danh sách mới:</label> <input type="text"
-									id="newList" name="listName" placeholder="Tên danh sách mới" />
-								<label for="newDescription">Mô tả:</label> <input type="text"
-									id="newDescription" name="description" placeholder="Mô tả" />
+									for="newList">Tên danh sách:</label> <input type="text"
+									id="newList" name="listName" placeholder="Nhập tên mới" /> <label
+									for="newDescription">Mô tả:</label> <input type="text"
+									id="newDescription" name="description" placeholder="Thêm mô tả" />
 								<button type="submit">Tạo và lưu</button>
 							</form>
 
 							<c:if test="${not empty favoriteLists}">
-								<hr style="border-top: 1px dashed #ccc; margin: 10px 0;">
-								<h3>Chọn danh sách có sẵn</h3>
+								<hr>
+								<h3>Chọn danh sách</h3>
 								<form
 									action="${pageContext.request.contextPath}/user/addToExistingList"
 									method="post">
@@ -232,7 +279,7 @@
 											</label>
 										</div>
 									</c:forEach>
-									<button type="submit">Lưu vào danh sách đã chọn</button>
+									<button type="submit">Lưu vào danh sách</button>
 								</form>
 							</c:if>
 						</div>
@@ -246,29 +293,32 @@
 					<p>${i.paperDetail.paperContent}</p>
 
 					<h3>Bình luận</h3>
-					<form action="${pageContext.request.contextPath}/submitComment"
-						method="post" onsubmit="return validateCommentForm()">
-						<input type="hidden" name="paperId" value="${i.id}" />
-						<div>
-							<label for="name">Tên:</label><br /> <input type="text"
-								id="name" name="name" required
-								style="width: calc(100% - 20px); padding: 12px;" />
-						</div>
-						<div>
-							<label for="email">Email:</label><br /> <input type="email"
-								id="email" name="email" required
-								style="width: calc(100% - 20px); padding: 12px;" />
-						</div>
-						<div>
-							<label for="comment">Nội dung:</label><br />
-							<textarea id="comment" name="comment" rows="6" required
-								style="width: calc(100% - 20px); padding: 12px;"></textarea>
-						</div>
-						<div style="margin-top: 20px;">
-							<button type="submit" style="padding: 14px 22px;">Gửi
-								bình luận</button>
-						</div>
-					</form>
+					<c:choose>
+						<c:when test="${not empty sessionScope.user}">
+							<form id="commentForm"
+								action="${pageContext.request.contextPath}/user/comment"
+								method="post" onsubmit="return submitComment(event);">
+								<input type="hidden" name="paperId" value="${i.id}" />
+								<div>
+									<label for="comment">Nội dung:</label><br />
+									<textarea id="comment" name="comment"
+										placeholder="Bình luận của bạn" rows="6" required
+										style="width: calc(100% - 20px); padding: 12px;"></textarea>
+								</div>
+								<div style="margin-top: 20px;">
+									<button type="submit" style="padding: 14px 22px;">Gửi
+										bình luận</button>
+								</div>
+							</form>
+						</c:when>
+						<c:otherwise>
+							<p>
+								Vui lòng <a
+									href="${pageContext.request.contextPath}/user/login?redirect=/user/paperDetail?id=${paperId}">đăng
+									nhập</a> để bình luận.
+							</p>
+						</c:otherwise>
+					</c:choose>
 				</c:if>
 			</c:forEach>
 		</div>
@@ -276,50 +326,60 @@
 		<div class="sidebar">
 			<h3>Bài báo liên quan</h3>
 			<c:forEach items="${relatedList}" var="related">
-				<div class="related-item"
-					style="display: flex; margin-bottom: 12px;">
-					<a href="paperDetail?id=${related.id}"
-						style="display: flex; align-items: center; text-decoration: none; color: #333;">
-						<img
+				<div class="related-item">
+					<a href="paperDetail?id=${related.id}"> <img
 						src="${not empty related.paperDetail.paperImage ? related.paperDetail.paperImage : '/newsWeb/views/Images/default-paper.png'}"
-						alt="${related.paperName}"
-						style="width: 80px; height: 60px; object-fit: cover; margin-right: 10px; border-radius: 4px;" />
-						<span>${related.paperName}</span>
+						alt="${related.paperName}" /> <span>${related.paperName}</span>
 					</a>
 				</div>
 			</c:forEach>
 		</div>
+
 		<script>
 			function toggleFavoriteOptions(icon) {
-				const options = icon.nextElementSibling;
+				const options = icon.closest('.favorite-button-container').querySelector('.favorite-options');
 				options.classList.toggle('show');
 				icon.classList.toggle('active');
 			}
 
-			function validateCommentForm() {
-				const name = document.getElementById('name').value.trim();
-				const email = document.getElementById('email').value.trim();
-				const comment = document.getElementById('comment').value.trim();
-
-				if (!name) {
-					alert('Vui lòng nhập tên.');
-					return false;
-				}
-				if (!email) {
-					alert('Vui lòng nhập email.');
-					return false;
-				}
-				const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-				if (!emailPattern.test(email)) {
-					alert('Email không đúng định dạng.');
-					return false;
-				}
-				if (!comment) {
+			function validateComment(comment) {
+				if (!comment || comment.trim() === '') {
 					alert('Vui lòng nhập nội dung bình luận.');
 					return false;
 				}
 				return true;
 			}
+
+			function submitComment(event) {
+				event.preventDefault();
+
+				const comment = document.getElementById('comment').value; // giả sử input textarea có id comment
+				const paperId = ${paperId}; // lấy trực tiếp biến paperId từ JSP
+
+				const formData = new URLSearchParams();
+				formData.append('comment', comment);
+				formData.append('paperId', paperId); // thêm paperId vào formData
+
+				fetch('${pageContext.request.contextPath}/user/paperDetail', {
+					method : 'POST',
+					headers : {
+						'Content-Type' : 'application/x-www-form-urlencoded; charset=UTF-8'
+					},
+					body : formData.toString()
+				}).then(response => response.json()).then(data => {
+					if (data.error) {
+						alert(data.error);
+					} else {
+						document.getElementById('comment').value = '';
+						alert(data.message);
+					}
+				}).catch(error => {
+					console.error('Lỗi khi gửi comment:', error);
+				});
+
+				return false;
+			}
 		</script>
+	</div>
 </body>
 </html>

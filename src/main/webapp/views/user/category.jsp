@@ -184,7 +184,7 @@ body {
 </style>
 </head>
 <body>
-
+	<%@ include file="/views/header.jsp"%>
 	<c:forEach items="${groupedByTypeId}" var="entry">
 		<c:set var="typeId" value="${entry.key}" />
 		<c:set var="papers" value="${entry.value}" />
@@ -198,7 +198,8 @@ body {
 				<div class="article-row">
 					<c:forEach items="${papers}" var="paper">
 						<div class="article"
-							onclick="handleArticleClick('paper/detail?id=${paper.id}')">
+							onclick="handleArticleClick('${pageContext.request.contextPath}/user/paperDetail?id=${paper.id}')">
+
 							<img src="${paper.paperDetail.paperImage}"
 								alt="${paper.paperName}"
 								style="width: 100%; height: auto; max-height: 450px; object-fit: cover; margin-bottom: 10px; border-radius: 8px;" />

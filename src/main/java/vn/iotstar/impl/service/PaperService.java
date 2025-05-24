@@ -89,4 +89,9 @@ public class PaperService implements IPaperService {
 	{
 		return paperDao.getAllFavoriteList();
 	}
+	@Override
+	public void insertComment(Comment comment)
+	{
+		paperDao.insertComment(comment);
+	}
 }

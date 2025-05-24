@@ -445,4 +445,20 @@ public class PaperDao implements IPaperDao {
 	    }
 	    return paper;
 	}
+	@Override
+    public void insertComment(Comment comment) {
+        EntityManager em = JPAConfig.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            tx.begin();
+            em.persist(comment);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+    }	
 }

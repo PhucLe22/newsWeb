@@ -27,21 +27,20 @@ public class CategoryListController extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		List<Paper> list = paperService.getAllPapers();
+		List<PaperType> listPt = paperTypeService.getAllPaperTypes();
+		req.setAttribute("PaperType", listPt);
 		Map<Integer, List<Paper>> groupedByTypeId = new HashMap<>();
 
-		// Tạo biến tạm lưu theo loại
 		List<Paper> currentGroup = new ArrayList<>();
 		Integer currentTypeId = null;
 
 		for (Paper p : list) {
 			Integer paperTypeId = p.getPaperType().getId();
 
-			// Nếu là lần đầu hoặc loại giống nhau thì tiếp tục add vào currentGroup
 			if (currentTypeId == null || paperTypeId.equals(currentTypeId)) {
 				currentGroup.add(p);
 				currentTypeId = paperTypeId;
 			} else {
-				// Gặp loại mới -> đưa currentGroup vào map
 				groupedByTypeId.put(currentTypeId, new ArrayList<>(currentGroup));
 				currentGroup.clear();
 				currentGroup.add(p);

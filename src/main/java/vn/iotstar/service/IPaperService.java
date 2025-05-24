@@ -2,6 +2,7 @@ package vn.iotstar.service;
 
 import java.util.List;
 
+import vn.iotstar.entity.Comment;
 import vn.iotstar.entity.FavoriteList;
 import vn.iotstar.entity.Paper;
 import vn.iotstar.entity.PaperType;
@@ -38,4 +39,6 @@ public interface IPaperService {
 	public Paper getPaperById(int id);
 	
 	public List<FavoriteList> getAllFavoriteList();
+	
+	public void insertComment(Comment comment);
 }

@@ -2,6 +2,7 @@ package vn.iotstar.dao;
 
 import java.util.List;
 
+import vn.iotstar.entity.Comment;
 import vn.iotstar.entity.FavoriteList;
 import vn.iotstar.entity.Paper;
 import vn.iotstar.entity.PaperType;
@@ -38,5 +39,7 @@ public interface IPaperDao {
 	public List<FavoriteList> getFavoriteListByUserId(int userId);
 	
 	public Paper getPaperById(int id);
+	
+	public void insertComment(Comment comment);
 	
 }

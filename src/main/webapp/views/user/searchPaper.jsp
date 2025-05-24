@@ -145,13 +145,12 @@ body {
 </style>
 </head>
 <body>
-	<%@ include file="/views/header.jsp" %>
+	<%@ include file="/views/header.jsp"%>
 	<div class="container">
 		<div class="main-content">
 			<c:forEach var="paper" items="${PaperList}">
 				<div class="paper-card">
-					<form
-						action="${pageContext.request.contextPath}/user/paperDetail"
+					<form action="${pageContext.request.contextPath}/user/paperDetail"
 						method="get">
 						<input type="hidden" name="id" value="${paper.id}" />
 						<div class="paper-image-container">
@@ -172,8 +171,7 @@ body {
 			<div class="sidebar-title">Tin tức 24h</div>
 			<c:forEach var="paper" items="${TodayPapers}">
 				<div class="sidebar-news-item">
-					<form
-						action="${pageContext.request.contextPath}/user/paperDetail"
+					<form action="${pageContext.request.contextPath}/user/paperDetail"
 						method="get">
 						<input type="hidden" name="id" value="${paper.id}" />
 						<button type="submit"
