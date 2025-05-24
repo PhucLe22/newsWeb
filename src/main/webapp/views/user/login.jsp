@@ -138,7 +138,7 @@ button:hover {
 		<div class="note">
 			Thông tin tài khoản quản trị viên (để thử nghiệm): <br>
 			<strong>Email:</strong> <span style="color: var(--color-accent);">admin@gmail.com</span><br>
-			<strong>Mật khẩu:</strong> <span style="color: var(--color-accent);">admin123</span>
+			<strong>Mật khẩu:</strong> <span style="color: var(--color-accent);">*****123</span>
 		</div>
 	</div>
 </body>

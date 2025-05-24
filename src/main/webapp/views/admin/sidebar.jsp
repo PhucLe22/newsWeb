@@ -73,9 +73,16 @@
 	</div>
 
 	<div class="logout-form">
-		<form action="${pageContext.request.contextPath}/user/login"
+		<form action="${pageContext.request.contextPath}/user/logout"
 			method="get">
 			<button type="submit" class="logout-btn">Đăng xuất</button>
 		</form>
 	</div>
+	<script>
+		function confirmLogout() {
+			return confirm("Bạn có chắc chắn muốn đăng xuất?");
+		}
+	</script>
 </div>
+
+

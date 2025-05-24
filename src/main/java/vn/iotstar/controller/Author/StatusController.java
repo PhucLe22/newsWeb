@@ -52,7 +52,7 @@ public class StatusController extends HttpServlet {
 
 		paper.setStatus(status);
 		paperService.updatePaper(paper);
-
+		
 		// Có thể redirect về danh sách hoặc trang cần thiết
 		resp.sendRedirect(req.getContextPath() + "/author/paper/list");
 	}

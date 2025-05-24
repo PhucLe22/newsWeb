@@ -157,6 +157,7 @@ h3 {
 </style>
 </head>
 <body>
+	<%@ include file="/views/header.jsp"%>
 	<div class="container">
 		<h2>
 			<i class="fas fa-newspaper"></i> Quản lý Bài Báo
@@ -195,6 +196,13 @@ h3 {
 								</select>
 							</form>
 						</div>
+						<%-- <form
+							action="${pageContext.request.contextPath}/author/paper/list"
+							method="post" style="display: inline;">
+							<button type="submit"
+								style="border: none; background-color: #34a6b7; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+								Bật thông báo</button>
+						</form> --%>
 					</div>
 				</div>
 			</c:forEach>

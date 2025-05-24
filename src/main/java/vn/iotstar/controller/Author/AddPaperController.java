@@ -38,6 +38,7 @@ public class AddPaperController extends HttpServlet {
 		// Nếu không có id (nghĩa là truy cập thêm bài viết mới)
 		req.getRequestDispatcher("/views/author/addPaper.jsp").forward(req, resp);
 	}
+
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		req.setCharacterEncoding("UTF-8");
@@ -105,7 +106,7 @@ public class AddPaperController extends HttpServlet {
 
 			// Điều hướng đến danh sách bài viết
 			resp.sendRedirect(req.getContextPath() + "/author/paper/list");
-
+			req.setAttribute("Paper", paper);
 		} catch (Exception e) {
 			e.printStackTrace();
 			req.setAttribute("message", "Lỗi khi thêm bài viết. Vui lòng thử lại.");
