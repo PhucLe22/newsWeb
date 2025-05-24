@@ -209,7 +209,7 @@
 							<h3>Lưu</h3>
 							<form
 								action="${pageContext.request.contextPath}/user/favoriteList"
-								method="post">
+								method="get">
 								<input type="hidden" name="paperId" value="${i.id}" /> <label
 									for="newList">Tạo danh sách mới:</label> <input type="text"
 									id="newList" name="listName" placeholder="Tên danh sách mới" />

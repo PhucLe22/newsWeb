@@ -21,6 +21,8 @@ public class LoginController extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String redirectUrl = req.getParameter("redirect"); // lấy redirect nếu có
+		req.setAttribute("redirect", redirectUrl); // gửi xuống form login
 		req.getRequestDispatcher("/views/user/login.jsp").forward(req, resp);
 	}
 
@@ -33,11 +35,13 @@ public class LoginController extends HttpServlet {
 
 		String email = req.getParameter("email");
 		String password = req.getParameter("password");
+		String redirectUrl = req.getParameter("redirect"); // lấy redirect từ form
+		System.out.println("Redirect after login: " + redirectUrl);
+
 
 		try {
 			// TH: Admin cố định
 			if ("admin@gmail.com".equals(email) && "admin123".equals(password)) {
-				session = req.getSession();
 				User admin = new User();
 				admin.setEmail(email);
 				admin.setAvatarUrl("https://www.shutterstock.com/image-vector/user-icon-vector-600nw-393536320.jpg");
@@ -55,7 +59,6 @@ public class LoginController extends HttpServlet {
 			User user = userService.findByEmailAndPassword(email, password);
 
 			if (user != null && user.isActive()) {
-				session = req.getSession();
 				session.setAttribute("user", user);
 
 				System.out.println("Đăng nhập thành công: " + user.getEmail());
@@ -63,22 +66,26 @@ public class LoginController extends HttpServlet {
 				int roleId = user.getRole().getId(); // lấy roleId từ user
 
 				if (roleId == 1) {
-					// RoleId = 1 thì chuyển tới trang index user
-					resp.sendRedirect(req.getContextPath() + "/user/homepage");
+					// Quay lại redirect nếu có
+					if (redirectUrl != null && !redirectUrl.isEmpty()) {
+						resp.sendRedirect(redirectUrl); // đã có context rồi → dùng luôn
+					} else {
+						resp.sendRedirect(req.getContextPath() + "/user/homepage");
+					}
 				} else if (roleId == 2) {
-					// RoleId = 2 thì chuyển tới trang author/home
 					resp.sendRedirect(req.getContextPath() + "/author/paper/list");
 				} else {
-					// Các role khác (nếu có), có thể redirect trang mặc định
 					resp.sendRedirect(req.getContextPath() + "/views/user/index.jsp");
 				}
 			} else {
 				req.setAttribute("error", "Email hoặc mật khẩu không đúng!");
+				req.setAttribute("redirect", redirectUrl); // giữ lại redirect nếu lỗi
 				req.getRequestDispatcher("/views/user/login.jsp").forward(req, resp);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			req.setAttribute("error", "Đã xảy ra lỗi: " + e.getMessage());
+			req.setAttribute("redirect", redirectUrl); // giữ lại redirect nếu lỗi
 			req.getRequestDispatcher("/views/user/login.jsp").forward(req, resp);
 		}
 	}

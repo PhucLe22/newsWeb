@@ -13,24 +13,27 @@ import vn.iotstar.entity.*;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(urlPatterns = { "/favorite/list" })
+@WebServlet(urlPatterns = { "/user/favoriteList" })
 public class favoriteListController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private IPaperService paperService = new PaperService();
+
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		HttpSession session = req.getSession();
-		User user = (User) session.getAttribute("account");
+		User user = (User) session.getAttribute("user");
 
 		if (user == null) {
-			resp.sendRedirect(req.getContextPath() + "/login");
+			String currentUrl = req.getRequestURI(); // lấy URL hiện tại
+			System.out.println("Current URL: " + currentUrl);
+			resp.sendRedirect(req.getContextPath() + "/user/login?redirect=" + currentUrl); // chuyển hướng kèm theo URL gốc
+			System.out.println("Current URL: " + currentUrl);
+			System.out.println("User in session: " + user);
 			return;
+		} else {
+			List<FavoriteList> favoriteList = paperService.getFavoriteListByUserId(user.getId());
+			req.setAttribute("favoriteList", favoriteList);
+			req.getRequestDispatcher("/views/user/favoriteList.jsp").forward(req, resp);
 		}
-
-		List<FavoriteList> favoriteList = paperService.getFavoriteListByUserId(user.getId());
-
-		req.setAttribute("favoriteList", favoriteList);
-
-		req.getRequestDispatcher("/WEB-INF/views/user/favoriteList.jsp").forward(req, resp);
 	}
 }

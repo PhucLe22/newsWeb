@@ -56,6 +56,25 @@ button:hover {
 	background: #3498db;
 }
 
+.back-button {
+	margin-top: 12px;
+	width: 100%;
+	padding: 10px;
+	background: #bdc3c7;
+	color: black;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	text-align: center;
+	text-decoration: none;
+	display: block;
+	font-weight: bold;
+}
+
+.back-button:hover {
+	background: #95a5a6;
+}
+
 .error {
 	color: red;
 	margin-bottom: 12px;
@@ -81,11 +100,11 @@ button:hover {
 
 		<form action="${pageContext.request.contextPath}/user/login"
 			method="post">
-			<label for="email">Email</label> <input type="text" id="email"
-				name="email" placeholder="Nhập email" required> <label
-				for="password">Mật khẩu</label> <input type="password" id="password"
-				name="password" placeholder="Nhập mật khẩu" required>
-
+			<input type="hidden" name="redirect" value="${redirect}" /> <label
+				for="email">Email</label> <input type="text" id="email" name="email"
+				placeholder="Nhập email" required> <label for="password">Mật
+				khẩu</label> <input type="password" id="password" name="password"
+				placeholder="Nhập mật khẩu" required>
 			<button type="submit">Đăng nhập</button>
 		</form>
 
