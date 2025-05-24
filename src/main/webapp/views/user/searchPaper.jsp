@@ -153,20 +153,22 @@ body {
 					<form action="${pageContext.request.contextPath}/user/paperDetail"
 						method="get">
 						<input type="hidden" name="id" value="${paper.id}" />
-						<div class="paper-image-container">
-							<img class="paper-image"
-								src="${not empty paper.paperDetail.paperImage ? paper.paperDetail.paperImage : '/newsWeb/views/Images/default-paper.png'}"
-								alt="${paper.paperName}">
-						</div>
-						<div class="paper-details">
-							<div class="paper-title">${paper.paperName}</div>
-							<div class="paper-date">${paper.paperDetail.createdAt}</div>
-						</div>
+						<button type="submit"
+							style="all: unset; cursor: pointer; display: block; width: 100%; text-align: left;">
+							<div class="paper-image-container">
+								<img class="paper-image"
+									src="${not empty paper.paperDetail.paperImage ? paper.paperDetail.paperImage : '/newsWeb/views/Images/default-paper.png'}"
+									alt="${paper.paperName}" />
+							</div>
+							<div class="paper-details">
+								<div class="paper-title">${paper.paperName}</div>
+								<div class="paper-date">${paper.paperDetail.createdAt}</div>
+							</div>
+						</button>
 					</form>
 				</div>
 			</c:forEach>
 		</div>
-
 		<div class="sidebar">
 			<div class="sidebar-title">Tin tức 24h</div>
 			<c:forEach var="paper" items="${TodayPapers}">
