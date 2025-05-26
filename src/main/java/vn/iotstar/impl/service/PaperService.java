@@ -94,4 +94,9 @@ public class PaperService implements IPaperService {
 	{
 		paperDao.insertComment(comment);
 	}
+	@Override
+	public List<Comment> getCommentsByPaperId(int paperId)
+	{
+		return paperDao.getCommentsByPaperId(paperId);
+	}
 }

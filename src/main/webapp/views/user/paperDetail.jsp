@@ -234,6 +234,44 @@
 	margin-right: 10px;
 	border-radius: 4px;
 }
+
+.comment-list {
+	margin-top: 24px;
+}
+
+.comment-item {
+	display: flex;
+	align-items: flex-start;
+	background-color: #f9f9f9;
+	border-radius: 8px;
+	padding: 16px;
+	margin-bottom: 16px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.comment-item img {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	margin-right: 16px;
+	object-fit: cover;
+}
+
+.comment-content {
+	flex-grow: 1;
+}
+
+.comment-meta {
+	font-size: 0.85em;
+	color: #888;
+	margin-bottom: 6px;
+}
+
+.comment-text {
+	font-size: 1em;
+	color: #333;
+	line-height: 1.5;
+}
 </style>
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
@@ -314,11 +352,31 @@
 						<c:otherwise>
 							<p>
 								Vui lòng <a
-									href="${pageContext.request.contextPath}/user/login?redirect=/user/paperDetail?id=${paperId}">đăng
+									href="${pageContext.request.contextPath}/user/login?redirect=/newsWeb/user/paperDetail?id=${paperId}">đăng
 									nhập</a> để bình luận.
 							</p>
 						</c:otherwise>
 					</c:choose>
+					<div class="comment-list" id="commentList">
+						<c:forEach items="${commentList}" var="c" varStatus="status">
+							<c:if test="${status.index < 5}">
+								<div class="comment-item">
+									<img src="${c.user.avatarUrl}" alt="Avatar">
+									<div class="comment-content">
+										<div class="comment-meta">
+											<strong>${c.user.fullname}</strong> –
+											<fmt:formatDate value="${c.createdAt}" pattern="dd/MM/yyyy" />
+										</div>
+										<div class="comment-text">${c.content}</div>
+									</div>
+								</div>
+							</c:if>
+						</c:forEach>
+					</div>
+
+					<button id="loadMoreBtn"
+						style="margin-top: 10px; padding: 10px 15px; font-size: 1em;">
+						Tải thêm bình luận</button>
 				</c:if>
 			</c:forEach>
 		</div>
@@ -336,49 +394,60 @@
 		</div>
 
 		<script>
-			function toggleFavoriteOptions(icon) {
-				const options = icon.closest('.favorite-button-container').querySelector('.favorite-options');
-				options.classList.toggle('show');
-				icon.classList.toggle('active');
-			}
+		function toggleFavoriteOptions(icon) {
+		    const options = icon.closest('.favorite-button-container').querySelector('.favorite-options');
+		    options.classList.toggle('show');
+		    icon.classList.toggle('active');
+		}
 
-			function validateComment(comment) {
-				if (!comment || comment.trim() === '') {
-					alert('Vui lòng nhập nội dung bình luận.');
-					return false;
-				}
-				return true;
-			}
+		function validateComment(comment) {
+		    if (!comment || comment.trim() === '') {
+		        alert('Vui lòng nhập nội dung bình luận.');
+		        return false;
+		    }
+		    return true;
+		}
 
-			function submitComment(event) {
-				event.preventDefault();
+		function submitComment(event) {
+		    event.preventDefault();
 
-				const comment = document.getElementById('comment').value; // giả sử input textarea có id comment
-				const paperId = ${paperId}; // lấy trực tiếp biến paperId từ JSP
+		    const comment = document.getElementById('comment').value;
+		    const paperId = ${paperId}; // lấy trực tiếp biến paperId từ JSP
 
-				const formData = new URLSearchParams();
-				formData.append('comment', comment);
-				formData.append('paperId', paperId); // thêm paperId vào formData
+		    // Validate comment
+		    if (!validateComment(comment)) {
+		        return false;
+		    }
 
-				fetch('${pageContext.request.contextPath}/user/paperDetail', {
-					method : 'POST',
-					headers : {
-						'Content-Type' : 'application/x-www-form-urlencoded; charset=UTF-8'
-					},
-					body : formData.toString()
-				}).then(response => response.json()).then(data => {
-					if (data.error) {
-						alert(data.error);
-					} else {
-						document.getElementById('comment').value = '';
-						alert(data.message);
-					}
-				}).catch(error => {
-					console.error('Lỗi khi gửi comment:', error);
-				});
+		    const formData = new URLSearchParams();
+		    formData.append('comment', comment); // Đổi từ 'comment' thành 'comment' để khớp với controller
+		    formData.append('paperId', paperId);
 
-				return false;
-			}
+		    fetch('${pageContext.request.contextPath}/user/comment', {
+		        method: 'POST',
+		        headers: {
+		            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+		        },
+		        body: formData.toString()
+		    })
+		    .then(response => response.json())
+		    .then(data => {
+		        if (data.error) {
+		            alert(data.error);
+		        } else if (data.success) {
+		            alert(data.success);
+		            document.getElementById('comment').value = '';
+		            // Reload trang để hiển thị comment mới
+		            window.location.href = `${pageContext.request.contextPath}/user/paperDetail?id=${paperId}`; 
+		        }
+		    })
+		    .catch(error => {
+		        console.error('Lỗi khi gửi comment:', error);
+		        alert('Có lỗi xảy ra khi gửi bình luận. Vui lòng thử lại.');
+		    });
+		    
+		    return false;
+		}
 		</script>
 	</div>
 </body>

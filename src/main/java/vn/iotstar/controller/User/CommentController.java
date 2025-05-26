@@ -1,6 +1,7 @@
 package vn.iotstar.controller.User;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Date;
 
 import jakarta.servlet.ServletException;
@@ -17,31 +18,38 @@ import vn.iotstar.impl.service.PaperService;
 public class CommentController extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
-
 	private IPaperService paperService = new PaperService();
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		req.setCharacterEncoding("UTF-8");
 		resp.setCharacterEncoding("UTF-8");
+		resp.setContentType("application/json; charset=UTF-8");
+
 		System.out.println("CommentController được gọi!");
 
-
 		HttpSession session = req.getSession();
-		User user = (User) session.getAttribute("account");
+		User user = (User) session.getAttribute("user"); // Sửa từ "account" thành "user"
+
+		PrintWriter out = resp.getWriter();
 
 		if (user == null) {
-			// Nếu chưa đăng nhập, chuyển đến trang login
-			resp.sendRedirect(req.getContextPath() + "/login");
+			// Trả về JSON error thay vì redirect
+			out.print("{\"error\": \"Bạn cần đăng nhập để bình luận.\"}");
+			out.flush();
 			return;
 		}
 
-		String content = req.getParameter("content");
+		// Sửa tên parameter từ "content" thành "comment" để khớp với JSP
+		String content = req.getParameter("comment");
 		String paperIdStr = req.getParameter("paperId");
 
+		System.out.println("Content: " + content);
+		System.out.println("PaperId: " + paperIdStr);
+
 		if (content == null || content.trim().isEmpty()) {
-			req.setAttribute("error", "Nội dung bình luận không được để trống.");
-			req.getRequestDispatcher("/views/user/paperDetail.jsp").forward(req, resp);
+			out.print("{\"error\": \"Nội dung bình luận không được để trống.\"}");
+			out.flush();
 			return;
 		}
 
@@ -50,12 +58,14 @@ public class CommentController extends HttpServlet {
 			Paper paper = paperService.getPaperById(paperId);
 
 			if (paper == null) {
-				req.setAttribute("error", "Không tìm thấy bài viết.");
-				req.getRequestDispatcher("/views/user/paperDetail.jsp").forward(req, resp);
+				out.print("{\"error\": \"Không tìm thấy bài viết.\"}");
+				out.flush();
 				return;
 			}
+
 			java.util.Date currentTime = new java.util.Date();
 			java.sql.Date sqlDate = new java.sql.Date(currentTime.getTime());
+
 			Comment comment = new Comment();
 			comment.setContent(content.trim());
 			comment.setCreatedAt(sqlDate);
@@ -64,15 +74,17 @@ public class CommentController extends HttpServlet {
 
 			paperService.insertComment(comment);
 
-			resp.sendRedirect(req.getContextPath() + "/paper/detail?id=" + paperId);
+			// Trả về JSON success
+			out.print("{\"success\": \"Bình luận đã được thêm thành công.\"}");
+			out.flush();
 
 		} catch (NumberFormatException e) {
-			req.setAttribute("error", "ID bài viết không hợp lệ.");
-			req.getRequestDispatcher("/views/user/paperDetail.jsp").forward(req, resp);
+			out.print("{\"error\": \"ID bài viết không hợp lệ.\"}");
+			out.flush();
 		} catch (Exception e) {
 			e.printStackTrace();
-			req.setAttribute("error", "Lỗi khi lưu bình luận.");
-			req.getRequestDispatcher("/views/user/paperDetail.jsp").forward(req, resp);
+			out.print("{\"error\": \"Lỗi khi lưu bình luận.\"}");
+			out.flush();
 		}
 	}
 }

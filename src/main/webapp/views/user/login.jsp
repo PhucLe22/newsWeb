@@ -21,7 +21,8 @@
 
 body {
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-	background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+	background: linear-gradient(135deg, var(--color-primary-dark) 0%,
+		var(--color-primary) 100%);
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -83,7 +84,8 @@ button {
 	font-size: 1.1rem;
 	font-weight: bold;
 	cursor: pointer;
-	transition: background-color var(--transition), transform 0.2s ease-in-out, box-shadow var(--transition);
+	transition: background-color var(--transition), transform 0.2s
+		ease-in-out, box-shadow var(--transition);
 }
 
 button:hover {
@@ -111,6 +113,17 @@ button:hover {
 	font-weight: bold;
 	color: var(--color-accent);
 }
+
+<
+.register-link {
+	color: white;
+	text-decoration: none;
+	transition: color 0.3s ease;
+}
+
+.register-link:hover {
+	color: #00bfa5; /* Màu xanh ngọc giống báo mới */
+}
 </style>
 </head>
 <body>
@@ -125,21 +138,30 @@ button:hover {
 			method="post">
 			<input type="hidden" name="redirect" value="${redirect}" />
 			<div class="form-group">
-				<label for="email">Email</label>
-				<input type="text" id="email" name="email" placeholder="Nhập địa chỉ email" required>
+				<label for="email">Email</label> <input type="text" id="email"
+					name="email" placeholder="Nhập địa chỉ email" required>
 			</div>
 			<div class="form-group">
-				<label for="password">Mật khẩu</label>
-				<input type="password" id="password" name="password" placeholder="Nhập mật khẩu" required>
+				<label for="password">Mật khẩu</label> <input type="password"
+					id="password" name="password" placeholder="Nhập mật khẩu" required>
 			</div>
 			<button type="submit">Đăng nhập</button>
 		</form>
 
-		<div class="note">
+		<div>
+			<p>Nếu chưa có tài khoản thì chuyển tới trang đăng kí</p>
+			<a href="${pageContext.request.contextPath}/register"
+				class="register-linzk"> Đăng ký</a>
+		</div>
+		<div>
+			<a href="${pageContext.request.contextPath}/user/homepage"
+				class="register-link">Quay về trang chủ</a>
+		</div>
+		<!-- <div class="note">
 			Thông tin tài khoản quản trị viên (để thử nghiệm): <br>
 			<strong>Email:</strong> <span style="color: var(--color-accent);">admin@gmail.com</span><br>
 			<strong>Mật khẩu:</strong> <span style="color: var(--color-accent);">*****123</span>
-		</div>
+		</div> -->
 	</div>
 </body>
 </html>

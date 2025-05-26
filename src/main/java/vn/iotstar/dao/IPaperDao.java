@@ -42,4 +42,6 @@ public interface IPaperDao {
 	
 	public void insertComment(Comment comment);
 	
+	public List<Comment> getCommentsByPaperId(int paperId);
+	
 }

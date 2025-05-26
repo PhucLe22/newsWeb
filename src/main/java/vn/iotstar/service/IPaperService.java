@@ -41,4 +41,6 @@ public interface IPaperService {
 	public List<FavoriteList> getAllFavoriteList();
 	
 	public void insertComment(Comment comment);
+	
+	public List<Comment> getCommentsByPaperId(int paperId);
 }

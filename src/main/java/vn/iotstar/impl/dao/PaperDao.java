@@ -387,26 +387,26 @@ public class PaperDao implements IPaperDao {
 		}
 		return favoriteList;
 	}
+
 	@Override
 	public List<FavoriteList> getAllFavoriteList() {
-	    EntityManager em = JPAConfig.getEntityManager();
-	    List<FavoriteList> favoriteLists = new ArrayList<>();
+		EntityManager em = JPAConfig.getEntityManager();
+		List<FavoriteList> favoriteLists = new ArrayList<>();
 
-	    try {
-	        String jpql = "SELECT f FROM Favorite f";
-	        TypedQuery<FavoriteList> query = em.createQuery(jpql, FavoriteList.class);
-	        favoriteLists = query.getResultList();
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    } finally {
-	        if (em != null && em.isOpen()) {
-	            em.close();
-	        }
-	    }
+		try {
+			String jpql = "SELECT f FROM Favorite f";
+			TypedQuery<FavoriteList> query = em.createQuery(jpql, FavoriteList.class);
+			favoriteLists = query.getResultList();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (em != null && em.isOpen()) {
+				em.close();
+			}
+		}
 
-	    return favoriteLists;
+		return favoriteLists;
 	}
-
 
 	@Override
 	public boolean save(FavoriteList favoriteList) {
@@ -430,35 +430,60 @@ public class PaperDao implements IPaperDao {
 
 		return result;
 	}
+
 	@Override
 	public Paper getPaperById(int id) {
-	    EntityManager em = JPAConfig.getEntityManager();
-	    Paper paper = null;
-	    try {
-	        paper = em.find(Paper.class, id);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    } finally {
-	        if (em != null && em.isOpen()) {
-	            em.close();
-	        }
-	    }
-	    return paper;
+		EntityManager em = JPAConfig.getEntityManager();
+		Paper paper = null;
+		try {
+			paper = em.find(Paper.class, id);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (em != null && em.isOpen()) {
+				em.close();
+			}
+		}
+		return paper;
 	}
-	@Override
-    public void insertComment(Comment comment) {
-        EntityManager em = JPAConfig.getEntityManager();
-        EntityTransaction tx = em.getTransaction();
 
-        try {
-            tx.begin();
-            em.persist(comment);
-            tx.commit();
-        } catch (Exception e) {
-            if (tx.isActive()) tx.rollback();
-            e.printStackTrace();
-        } finally {
-            em.close();
-        }
-    }	
+	@Override
+	public void insertComment(Comment comment) {
+		EntityManager em = JPAConfig.getEntityManager();
+		EntityTransaction tx = em.getTransaction();
+
+		try {
+			tx.begin();
+			em.persist(comment);
+			tx.commit();
+		} catch (Exception e) {
+			if (tx.isActive())
+				tx.rollback();
+			e.printStackTrace();
+		} finally {
+			em.close();
+		}
+	}
+
+	@Override
+	public List<Comment> getCommentsByPaperId(int paperId) {
+		EntityManager em = JPAConfig.getEntityManager();
+		List<Comment> comments = null;
+		try {
+			String jpql = "SELECT c FROM Comment c " + "JOIN FETCH c.user " + "JOIN FETCH c.paper "
+					+ "WHERE c.paper.id = :paperId " + "ORDER BY c.createdAt DESC";
+
+			TypedQuery<Comment> query = em.createQuery(jpql, Comment.class);
+			query.setParameter("paperId", paperId);
+			comments = query.getResultList();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (em != null && em.isOpen()) {
+				em.close();
+			}
+		}
+		return comments;
+	}
 }
