@@ -516,7 +516,6 @@
 					</c:choose>
 					<div class="comment-list" id="commentList">
 						<c:forEach items="${commentList}" var="c" varStatus="status">
-							<c:if test="${status.index < 5}">
 								<div class="comment-item">
 									<img src="${c.user.avatarUrl}" alt="Avatar">
 									<div class="comment-content">
@@ -527,7 +526,6 @@
 										<div class="comment-text">${c.content}</div>
 									</div>
 								</div>
-							</c:if>
 						</c:forEach>
 					</div>
 				</c:if>
@@ -692,7 +690,6 @@
 		        if (data.error) {
 		            alert(data.error);
 		        } else if (data.success) {
-		            alert(data.success);
 		            document.getElementById('comment').value = '';
 		            window.location.href = `${pageContext.request.contextPath}/user/paperDetail?id=${paperId}`; 
 		        }

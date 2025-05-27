@@ -39,6 +39,8 @@ public class EditCategoryController extends HttpServlet {
 		} else {
 			req.setAttribute("paperType", paperType);
 		}
+		System.out.println("GET /admin/edit - ID nhận được: " + id);
+		System.out.println("Loại bài báo lấy được: " + (paperType != null ? paperType.getPaperTypeName() : "null"));
 		req.getRequestDispatcher("/views/admin/editCa.jsp").forward(req, resp);
 	}
 
@@ -75,6 +77,10 @@ public class EditCategoryController extends HttpServlet {
 
 		paperType.setPaperTypeName(newPaperTypeName.trim());
 		boolean isUpdated = paperService.updatePaperType(paperType);
+		
+		System.out.println("POST /admin/edit - ID: " + id + ", Tên mới: " + newPaperTypeName);
+		System.out.println("Cập nhật kết quả: " + (isUpdated ? "Thành công" : "Thất bại"));
+
 		if (isUpdated) {
 			req.setAttribute("message", "Cập nhật thành công");
 			req.setAttribute("paperType", paperType); // để giữ lại dữ liệu đã cập nhật

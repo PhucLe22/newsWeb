@@ -72,7 +72,7 @@ button:hover {
 		<h3>Chỉnh sửa</h3>
 
 		<form action="${pageContext.request.contextPath}/admin/edit"
-			method="get" class="form-box">
+			method="post" class="form-box">
 			<input type="hidden" name="id" value="${paperType.id}" />
 
 			<div>

@@ -265,7 +265,6 @@ public class PaperDao implements IPaperDao {
 		try {
 			trans.begin();
 
-			// Kiểm tra xem có tồn tại không
 			PaperType existingType = enma.find(PaperType.class, PaperType.getId());
 			if (existingType != null) {
 				existingType.setPaperTypeName(PaperType.getPaperTypeName());
