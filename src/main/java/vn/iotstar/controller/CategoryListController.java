@@ -2,6 +2,7 @@ package vn.iotstar.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,6 @@ import vn.iotstar.service.IPaperTypeService;
 import vn.iotstar.entity.*;
 
 @WebServlet(urlPatterns = { "/user/category" })
-
 public class CategoryListController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private IPaperService paperService = new PaperService();
@@ -27,10 +27,11 @@ public class CategoryListController extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		List<Paper> list = paperService.getAllPapers();
-		List<PaperType> listPt = paperTypeService.getAllPaperTypes();
-		req.setAttribute("PaperType", listPt);
-		Map<Integer, List<Paper>> groupedByTypeId = new HashMap<>();
 
+		// Sắp xếp danh sách theo paperTypeId để dễ nhóm
+		list.sort(Comparator.comparing(p -> p.getPaperType().getId()));
+
+		Map<Integer, List<Paper>> groupedByTypeId = new HashMap<>();
 		List<Paper> currentGroup = new ArrayList<>();
 		Integer currentTypeId = null;
 
@@ -41,6 +42,7 @@ public class CategoryListController extends HttpServlet {
 				currentGroup.add(p);
 				currentTypeId = paperTypeId;
 			} else {
+				// Lưu nhóm hiện tại
 				groupedByTypeId.put(currentTypeId, new ArrayList<>(currentGroup));
 				currentGroup.clear();
 				currentGroup.add(p);
@@ -48,12 +50,12 @@ public class CategoryListController extends HttpServlet {
 			}
 		}
 
-		// Đưa group cuối cùng vào map nếu còn
+		// Thêm nhóm cuối cùng vào map nếu còn
 		if (!currentGroup.isEmpty() && currentTypeId != null) {
 			groupedByTypeId.put(currentTypeId, currentGroup);
 		}
 
-		// Lấy danh sách tất cả PaperType để hiển thị tên
+		// Lấy danh sách PaperType để lấy tên hiển thị
 		List<PaperType> listType = paperTypeService.getAllPaperTypes();
 		Map<Integer, String> typeNames = new HashMap<>();
 		for (PaperType t : listType) {

@@ -288,8 +288,8 @@ request.setAttribute("currentUser", currentUser);
 	<div class="header-auth">
 		<c:choose>
 			<c:when test="${currentUser != null}">
-				<div class="header-avatar" onclick="showLogoutModal()">
-					<img src="${currentUser.avatarUrl}" alt="Avatar">
+				<div class="header-avatar" onclick="location.href='${pageContext.request.contextPath}/user/profile'">
+				    <img src="${currentUser.avatarUrl}" alt="Avatar">
 				</div>
 				<div class="header-actions">
 					<button class="logout-button" onclick="showLogoutModal()">Đăng
@@ -302,9 +302,9 @@ request.setAttribute("currentUser", currentUser);
 						<button type="button" id="notificationButton"
 							class="header-notification"
 							style="border: none; background: none; padding: 0; cursor: pointer;">
-							<img
+<!-- 							<img
 								src="https://cdn-icons-png.flaticon.com/512/1827/1827392.png"
-								alt="Thông báo" width="24" height="24" />
+								alt="Thông báo" width="24" height="24" /> -->
 						</button>
 					</form>
 					<div id="notificationBox" class="notification-box">
@@ -349,54 +349,56 @@ request.setAttribute("currentUser", currentUser);
 	style="display: none;"></form>
 
 <script>
-  const logoutModal = document.getElementById("logoutModal");
-  const notificationBox = document.getElementById("notificationBox");
-  const notificationBell = document.querySelector(".header-notification");
+	const logoutModal = document.getElementById("logoutModal");
+	const notificationBox = document.getElementById("notificationBox");
+	const notificationBell = document.querySelector(".header-notification");
 
-  function showLogoutModal() {
-    logoutModal.classList.add("show");
-  }
+	function showLogoutModal() {
+		logoutModal.classList.add("show");
+	}
 
-  function hideLogoutModal() {
-    logoutModal.classList.remove("show");
-  }
+	function hideLogoutModal() {
+		logoutModal.classList.remove("show");
+	}
 
-  function confirmLogout() {
-    document.getElementById("logoutForm").submit();
-  }
+	function confirmLogout() {
+		document.getElementById("logoutForm").submit();
+	}
 
-  // Tắt modal khi bấm bên ngoài
-  logoutModal.addEventListener("click", function(e) {
-    if (e.target === this) {
-      hideLogoutModal();
-    }
-  });
+	// Tắt modal khi bấm bên ngoài
+	logoutModal.addEventListener("click", function(e) {
+		if (e.target === this) {
+			hideLogoutModal();
+		}
+	});
 
-  // Tắt modal bằng ESC
-  document.addEventListener("keydown", function(e) {
-    if (e.key === "Escape") {
-      hideLogoutModal();
-    }
-  });
+	// Tắt modal bằng ESC
+	document.addEventListener("keydown", function(e) {
+		if (e.key === "Escape") {
+			hideLogoutModal();
+		}
+	});
 
-  // Toggle hiển thị hộp thông báo
-  function toggleNotificationBox() {
-    notificationBox.style.display = notificationBox.style.display === "block" ? "none" : "block";
-  }
+	// Toggle hiển thị hộp thông báo
+	function toggleNotificationBox() {
+		notificationBox.style.display = notificationBox.style.display === "block" ? "none"
+				: "block";
+	}
 
-  // Ẩn hộp thông báo khi click bên ngoài
-  document.addEventListener("click", function(e) {
-    // Kiểm tra xem hộp thông báo có tồn tại không trước khi thao tác
-    if (notificationBox && notificationBell) {
-      // Nếu click không nằm trong hộp thông báo VÀ không nằm trong nút chuông thì ẩn
-      if (!notificationBox.contains(e.target) && !notificationBell.contains(e.target)) {
-        notificationBox.style.display = "none";
-      }
-    }
-  });
+	// Ẩn hộp thông báo khi click bên ngoài
+	document.addEventListener("click", function(e) {
+		// Kiểm tra xem hộp thông báo có tồn tại không trước khi thao tác
+		if (notificationBox && notificationBell) {
+			// Nếu click không nằm trong hộp thông báo VÀ không nằm trong nút chuông thì ẩn
+			if (!notificationBox.contains(e.target)
+					&& !notificationBell.contains(e.target)) {
+				notificationBox.style.display = "none";
+			}
+		}
+	});
 
-  // Gắn sự kiện click cho nút thông báo để gọi toggleNotificationBox
-  if (notificationBell) {
-    notificationBell.addEventListener("click", toggleNotificationBox);
-  }
+	// Gắn sự kiện click cho nút thông báo để gọi toggleNotificationBox
+	if (notificationBell) {
+		notificationBell.addEventListener("click", toggleNotificationBox);
+	}
 </script>

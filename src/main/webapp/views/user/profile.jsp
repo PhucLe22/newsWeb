@@ -9,36 +9,54 @@
 <title>Trang cá nhân</title>
 <style>
 body {
-	font-family: Arial, sans-serif;
-	margin: 30px;
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	margin: 0;
+	background-color: #f4f6f8;
+	color: #333;
+}
+
+header, footer {
+	background-color: #1e88e5;
+	color: white;
+	padding: 15px 30px;
+	text-align: center;
+}
+
+header h1, footer p {
+	margin: 0;
 }
 
 .profile-container {
-	max-width: 600px;
+	max-width: 700px;
+	margin: 40px auto;
+	background-color: white;
+	padding: 30px;
+	border-radius: 12px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-info p {
+	font-size: 16px;
+	margin: 12px 0;
 }
 
 .profile-info img {
 	border-radius: 8px;
 	margin-top: 10px;
-}
-
-.saved-papers {
-	margin-top: 30px;
-}
-
-.saved-papers ul {
-	padding-left: 20px;
+	border: 1px solid #ccc;
+	box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
 }
 </style>
 </head>
 <body>
+	<%@ include file="/views/header.jsp"%>
+
+	<%
+	User user = (User) request.getAttribute("user");
+	List<Paper> savedPapers = (List<Paper>) request.getAttribute("savedPapers");
+	%>
 
 	<div class="profile-container">
-		<%
-		User user = (User) request.getAttribute("user");
-		List<Paper> savedPapers = (List<Paper>) request.getAttribute("savedPapers");
-		%>
-
 		<h2>Thông tin cá nhân</h2>
 		<div class="profile-info">
 			<p>
@@ -52,32 +70,10 @@ body {
 				<%=user.getPhoneNumber() != null ? user.getPhoneNumber() : "Chưa cập nhật"%></p>
 			<p>
 				<strong>Avatar:</strong><br> <img
-					src="<%=user.getAvatarUrl()%>" width="100" height="100">
+					src="<%=user.getAvatarUrl()%>" width="120" height="120">
 			</p>
 		</div>
-
-		<div class="saved-papers">
-			<h3>Bài báo đã lưu</h3>
-			<%
-			if (savedPapers != null && !savedPapers.isEmpty()) {
-			%>
-			<ul>
-				<%
-				for (Paper paper : savedPapers) {
-				%>
-				<li><%=paper.getPaperName()%></li>
-				<%
-				}
-				%>
-			</ul>
-			<%
-			} else {
-			%>
-			<p>Chưa lưu bài báo nào.</p>
-			<%
-			}
-			%>
-		</div>
 	</div>
+	<%@ include file="/views/footer.jsp"%>
 </body>
 </html>

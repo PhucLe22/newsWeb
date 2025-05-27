@@ -34,7 +34,7 @@ public interface IUserService {
 	
 	public User findById(int id);
 
-	Set<Role> getRolesByUserId(int userId);
+//	Set<Role> getRolesByUserId(int userId);
 	
 	public List<User> getAllUsers();
 
@@ -45,4 +45,6 @@ public interface IUserService {
 	public void saveUser(User user);
 	
 	public boolean savedUser(User user);
+	
+	public Role getRoleByUserId(int userId);
 }

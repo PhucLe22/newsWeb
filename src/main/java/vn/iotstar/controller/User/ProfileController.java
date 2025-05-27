@@ -26,10 +26,8 @@ public class ProfileController extends HttpServlet {
 			return;
 		}
 
-		// Lấy danh sách bài đã lưu (nếu có)
 		List<Paper> savedPapers = user.getSavedPapers();
 
-		// Truyền user và danh sách paper xuống JSP
 		req.setAttribute("user", user);
 		req.setAttribute("savedPapers", savedPapers);
 

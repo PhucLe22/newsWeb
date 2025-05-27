@@ -5,55 +5,57 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Giao diện Bài báo</title>
 <style>
 body {
-	margin: 20px;
-	background-color: #f5f5f5; /* Màu background của web */
+	margin: 15px;
+	background-color: #f5f5f5;
 }
 
 .container {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 15px;
-	max-width: 980px;
+	gap: 12px;
+	width: 100%;
+	max-width: 1200px; /* Thu nhỏ chiều rộng tối đa */
 	margin: 0 auto;
-	padding: 10px;
+	padding: 0 20px; /* Thu nhỏ padding 2 bên */
 }
 
 .card {
-	background-color: #f5f5f5; /* Màu thẻ giống background */
-	border: none; /* Loại bỏ viền thẻ */
+	background-color: #f5f5f5;
+	border: none;
 	border-radius: 0;
-	padding: 10px;
-	width: calc(50% - 15px);
+	padding: 8px;
+	flex: 1 1 calc(50% - 6px); /* 2 card mỗi hàng với gap 12px */
+	min-width: 280px;
 	box-sizing: border-box;
 	transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 	position: relative;
-	cursor: pointer; /* Thêm con trỏ chuột khi hover vào thẻ */
+	cursor: pointer;
 }
 
 .card:hover {
 	transform: translateY(-5px);
 	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-	/* background-color: #e0e0e0; Loại bỏ thay đổi màu nền khi hover */
 }
 
 .card-header {
 	color: #007bff;
 	margin-top: 0;
-	margin-bottom: 8px;
-	font-size: 1em;
+	margin-bottom: 6px;
+	font-size: 0.9em;
 }
 
 .article-row {
 	display: flex;
-	gap: 10px;
-	margin-bottom: 8px;
+	gap: 8px;
+	margin-bottom: 6px;
 	border-bottom: 1px solid #ddd;
-	padding-bottom: 8px;
+	padding-bottom: 6px;
+	flex-wrap: wrap;
 }
 
 .article-row:last-child {
@@ -65,17 +67,18 @@ body {
 .article {
 	display: flex;
 	flex-direction: column;
-	flex: 1;
-	cursor: pointer; /* Thêm con trỏ chuột khi hover vào bài báo */
+	flex: 1 1 45%;
+	cursor: pointer;
+	margin-bottom: 8px;
 }
 
 .article img {
-	max-width: 100%;
-	height: auto;
+	width: 100%; /* Chiều rộng cố định */
+	height: 120px; /* Chiều cao cố định để tất cả ảnh bằng nhau */
+	object-fit: cover; /* Cắt ảnh để vừa khung mà không bị méo */
 	border-radius: 0;
-	margin-bottom: 5px;
+	margin-bottom: 4px;
 	transition: transform 0.2s ease-in-out;
-	/* Hiệu ứng nhỏ cho ảnh khi hover */
 }
 
 .article img:hover {
@@ -83,35 +86,42 @@ body {
 }
 
 .article h4 {
-	font-size: 0.85em;
+	font-size: 0.8em;
 	margin-top: 0;
-	margin-bottom: 3px;
+	margin-bottom: 2px;
 	color: #333;
 	line-height: 1.2;
-	transition: color 0.2s ease-in-out; /* Hiệu ứng màu cho tiêu đề */
+	transition: color 0.2s ease-in-out;
+	min-height: 2.4em; /* Đảm bảo tiêu đề có chiều cao tối thiểu */
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
 }
 
 .article h4:hover {
-	color: #007bff; /* Màu xanh khi hover vào tiêu đề */
+	color: #007bff;
 }
 
 .article p {
-	font-size: 0.75em;
+	font-size: 0.7em;
 	color: #777;
 	margin-bottom: 0;
 }
 
 .fullscreen-button {
 	position: absolute;
-	top: 10px;
-	right: 10px;
+	top: 8px;
+	right: 8px;
 	background: none;
 	border: none;
 	cursor: pointer;
-	font-size: 1.2em;
+	font-size: 1.1em;
 	color: #555;
 	opacity: 0.7;
 	transition: opacity 0.2s ease-in-out;
+	z-index: 10;
 }
 
 .fullscreen-button:hover {
@@ -125,7 +135,7 @@ body {
 	left: 20px;
 	right: 20px;
 	bottom: 20px;
-	background-color: #fff; /* Màu nền phóng to trắng sáng */
+	background-color: #fff;
 	border: 1px solid #ddd;
 	border-radius: 0;
 	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -151,10 +161,21 @@ body {
 .fullscreen-card .article-row {
 	margin-bottom: 15px;
 	padding-bottom: 15px;
+	flex-wrap: wrap;
+}
+
+.fullscreen-card .article {
+	flex: 1 1 45%;
+}
+
+.fullscreen-card .article img {
+	height: 200px; /* Ảnh lớn hơn trong fullscreen */
 }
 
 .fullscreen-card .article h4 {
 	font-size: 1em;
+	min-height: auto;
+	-webkit-line-clamp: unset;
 }
 
 .fullscreen-card .article p {
@@ -172,97 +193,139 @@ body {
 	display: none;
 }
 
-/* Điều chỉnh cho màn hình nhỏ hơn */
-@media ( max-width : 768px) {
+/* Responsive cho tablet */
+@media ( max-width : 1024px) and (min-width: 769px) {
+	.container {
+		padding: 0 15px;
+	}
 	.card {
-		width: 100%;
+		flex: 1 1 calc(50% - 6px);
+		min-width: 0;
+	}
+}
+
+/* Responsive cho mobile */
+@media ( max-width : 768px) {
+	.container {
+		padding: 0 10px;
+	}
+	.card {
+		flex: 1 1 100%; /* Mobile thì 1 card mỗi hàng */
+		min-width: 0;
 	}
 	.article-row {
 		flex-direction: column;
+	}
+	.article {
+		flex: 1 1 100%;
+	}
+	.article img {
+		height: 150px; /* Ảnh nhỏ hơn trên mobile */
 	}
 }
 </style>
 </head>
 <body>
 	<%@ include file="/views/header.jsp"%>
-	<c:forEach items="${groupedByTypeId}" var="entry">
-		<c:set var="typeId" value="${entry.key}" />
-		<c:set var="papers" value="${entry.value}" />
-		<c:set var="typeName" value="${typeNames[typeId]}" />
 
-		<div class="container">
-			<div class="card" onclick="handleCardClick(this)">
-				<button class="fullscreen-button" onclick="toggleFullscreen(this)">&#x26F6;</button>
-				<h3 class="card-header">${typeName}</h3>
+	<div class="container">
+		<c:forEach items="${typeNames.entrySet()}" var="typeEntry">
+			<c:set var="typeId" value="${typeEntry.key}" />
+			<c:set var="typeName" value="${typeEntry.value}" />
+			<c:set var="papers" value="${groupedByTypeId[typeId]}" />
 
-				<div class="article-row">
-					<c:forEach items="${papers}" var="paper">
-						<div class="article"
-							onclick="handleArticleClick('${pageContext.request.contextPath}/user/paperDetail?id=${paper.id}')">
+			<%-- Đếm số bài báo có status != 0 --%>
+			<c:set var="validPaperCount" value="0" />
+			<c:if test="${not empty papers}">
+				<c:forEach items="${papers}" var="paper">
+					<c:if test="${paper.status != 0}">
+						<c:set var="validPaperCount" value="${validPaperCount + 1}" />
+					</c:if>
+				</c:forEach>
+			</c:if>
 
-							<img src="${paper.paperDetail.paperImage}"
-								alt="${paper.paperName}"
-								style="width: 100%; height: auto; max-height: 450px; object-fit: cover; margin-bottom: 10px; border-radius: 8px;" />
-							<h4>${paper.paperName}</h4>
-							<p>${paper.paperDetail.createdAt}</p>
-						</div>
-					</c:forEach>
+			<%-- Chỉ hiển thị card nếu có bài báo hợp lệ --%>
+			<c:if test="${validPaperCount > 0}">
+				<div class="card" onclick="handleCardClick(this)">
+					<button class="fullscreen-button"
+						onclick="event.stopPropagation(); toggleFullscreen(this)">&#x26F6;</button>
+					<h3 class="card-header">${typeName}</h3>
+					<div class="article-row">
+						<c:forEach items="${papers}" var="paper">
+							<c:if test="${paper.status != 0}">
+								<div class="article"
+									onclick="handleArticleClick('${pageContext.request.contextPath}/user/paperDetail?id=${paper.id}')">
+									<img src="${paper.paperDetail.paperImage}"
+										alt="${paper.paperName}" />
+									<h4>${paper.paperName}</h4>
+									<p>${paper.paperDetail.createdAt}</p>
+								</div>
+							</c:if>
+						</c:forEach>
+					</div>
 				</div>
-			</div>
-		</div>
-	</c:forEach>
+			</c:if>
+		</c:forEach>
+	</div>
 
 	<div id="fullscreenOverlay" class="overlay"></div>
 
 	<script>
-		let fullscreenCard = null;
-		const overlay = document.getElementById('fullscreenOverlay');
+let fullscreenCard = null;
+const overlay = document.getElementById('fullscreenOverlay');
 
-		function handleCardClick(card) {
-			console.log('Đã bấm vào thẻ:', card.querySelector('h3').textContent);
-		}
+function handleCardClick(card) {
+    console.log('Đã bấm vào thẻ:', card.querySelector('h3').textContent);
+}
 
-		function handleArticleClick(link) {
-			console.log('Đã bấm vào bài báo:', link);
-			window.location.href = link;
-		}
+function handleArticleClick(link) {
+    console.log('Đã bấm vào bài báo:', link);
+    window.location.href = link;
+}
 
-		function toggleFullscreen(button) {
-			const card = button.parentNode.cloneNode(true);
-			const container = document.querySelector('.container');
+function toggleFullscreen(button) {
+    if (fullscreenCard) {
+        closeFullscreen();
+        return;
+    }
+    
+    const originalCard = button.parentNode;
+    fullscreenCard = document.createElement('div');
+    fullscreenCard.classList.add('fullscreen-card');
 
-			if (!fullscreenCard) {
-				fullscreenCard = document.createElement('div');
-				fullscreenCard.classList.add('fullscreen-card');
+    // Close button
+    const closeButton = document.createElement('button');
+    closeButton.classList.add('fullscreen-button');
+    closeButton.innerHTML = '&#x2715;';
+    closeButton.onclick = closeFullscreen;
+    fullscreenCard.appendChild(closeButton);
 
-				const closeButton = document.createElement('button');
-				closeButton.classList.add('fullscreen-button');
-				closeButton.innerHTML = '&#x2715;';
-				closeButton.onclick = closeFullscreen;
-				fullscreenCard.appendChild(closeButton);
+    // Clone header
+    const header = originalCard.querySelector('h3').cloneNode(true);
+    fullscreenCard.appendChild(header);
 
-				fullscreenCard.appendChild(card.querySelector('h3'));
-				const articleRows = card.querySelectorAll('.article-row');
-				articleRows.forEach(row => fullscreenCard.appendChild(row.cloneNode(true)));
+    // Clone article rows
+    const articleRows = originalCard.querySelectorAll('.article-row');
+    articleRows.forEach(row => {
+        fullscreenCard.appendChild(row.cloneNode(true));
+    });
 
-				document.body.appendChild(fullscreenCard);
-				overlay.style.display = 'block';
-				document.body.style.overflow = 'hidden';
-			} else {
-				closeFullscreen();
-			}
-		}
+    document.body.appendChild(fullscreenCard);
+    overlay.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
 
-		function closeFullscreen() {
-			if (fullscreenCard) {
-				fullscreenCard.remove();
-				fullscreenCard = null;
-				overlay.style.display = 'none';
-				document.body.style.overflow = 'auto';
-			}
-		}
+function closeFullscreen() {
+    if (fullscreenCard) {
+        fullscreenCard.remove();
+        fullscreenCard = null;
+        overlay.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+}
 
-		overlay.addEventListener('click', closeFullscreen);
-	</script>
+overlay.addEventListener('click', closeFullscreen);
+</script>
+
 </body>
 </html>

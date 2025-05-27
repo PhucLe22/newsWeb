@@ -10,6 +10,7 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import vn.iotstar.configs.JPAConfig;
 import vn.iotstar.dao.IUserDao;
+import vn.iotstar.entity.FavoriteList;
 import vn.iotstar.entity.Role;
 import vn.iotstar.entity.User;
 
@@ -135,27 +136,25 @@ public class UserDao implements IUserDao {
 			em.close();
 		}
 	}
-
+	
 	@Override
-	public Set<Role> getRolesByUserId(int userId) {
-		EntityManager em = JPAConfig.getEntityManager();
-		try {
-			// Ép Hibernate fetch roles ngay khi query
-			String jpql = "SELECT u FROM User u JOIN FETCH u.roles WHERE u.id = :userId";
-			TypedQuery<User> query = em.createQuery(jpql, User.class);
-			query.setParameter("userId", userId);
+	public Role getRoleByUserId(int userId) {
+	    EntityManager em = JPAConfig.getEntityManager();
+	    try {
+	        String jpql = "SELECT u FROM User u JOIN FETCH u.role WHERE u.id = :userId";
+	        TypedQuery<User> query = em.createQuery(jpql, User.class);
+	        query.setParameter("userId", userId);
 
-			User user = query.getSingleResult();
-			System.out.println("domdom" + user);
-			return user.getRoles(); // đã được fetch trong JOIN FETCH
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new HashSet<>();
-		} finally {
-			em.close(); // Đóng sau khi dữ liệu đã được load
-		}
+	        User user = query.getSingleResult();
+	        return user.getRole();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null;
+	    } finally {
+	        em.close();
+	    }
 	}
+
 
 	@Override
 	public List<User> getAllUsers() {

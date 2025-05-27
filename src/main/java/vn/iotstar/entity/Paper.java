@@ -52,8 +52,10 @@ public class Paper implements Serializable {
 	@OneToMany(mappedBy = "paper", cascade = CascadeType.ALL)
 	private Set<Review> review = new HashSet<>();
 
-	@ManyToMany(mappedBy = "papers", cascade = CascadeType.ALL)
-	private Set<FavoriteList> favoritePaper = new HashSet<>();
+    // Liên kết đến danh sách yêu thích (mỗi paper thuộc 1 favoriteList)
+    @ManyToOne
+    @JoinColumn(name = "favo_id") // sẽ tạo cột favo_id trong bảng paper
+    private FavoriteList favoriteList;
 
 	@Column(name = "is_active")
 	private boolean isActive;

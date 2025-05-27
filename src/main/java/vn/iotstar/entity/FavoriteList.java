@@ -2,6 +2,7 @@ package vn.iotstar.entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.persistence.*;
@@ -18,7 +19,7 @@ public class FavoriteList implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     private String name;
 
@@ -34,11 +35,7 @@ public class FavoriteList implements Serializable {
     private User user;
 
     // Mỗi danh sách có thể chứa nhiều bài viết
-    @ManyToMany
-    @JoinTable(
-        name = "favorite_list_paper",
-        joinColumns = @JoinColumn(name = "favorite_list_id"),
-        inverseJoinColumns = @JoinColumn(name = "paper_id")
-    )
-    private Set<Paper> papers;
+    // Một danh sách yêu thích chứa nhiều bài viết
+    @OneToMany(mappedBy = "favoriteList", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Paper> papers = new HashSet<>();
 }

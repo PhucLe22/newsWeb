@@ -111,11 +111,11 @@ public class UserService implements IUserService {
 		return user;
 	}
 
-	@Override
-	public Set<Role> getRolesByUserId(int userId) {
-		Set<Role> roles = userDao.getRolesByUserId(userId);
-		return roles;
-	}
+//	@Override
+//	public Set<Role> getRolesByUserId(int userId) {
+//		Set<Role> roles = userDao.getRolesByUserId(userId);
+//		return roles;
+//	}
 
 	@Override
 	public List<User> getAllUsers() {
@@ -146,5 +146,10 @@ public class UserService implements IUserService {
 			e.printStackTrace();
 			return false; // lưu thất bại
 		}
+	}
+	@Override
+	public Role getRoleByUserId(int userId)
+	{
+		return userDao.getRoleByUserId(userId);
 	}
 }
