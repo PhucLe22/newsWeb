@@ -167,26 +167,20 @@ body {
 		<div class="content-header">
 			<h1>Thông tin</h1>
 		</div>
+		<div class="profile-avatar-container"> <img src="https://as2.ftcdn.net/jpg/02/72/43/23/1000_F_272432381_K2Hr5iaoCEhqpC9zSvnGOIHMSqgsQcjb.jpg"
+			alt="Avatar" class="profile-avatar">
+	</div>
 
-		<div class="profile-info">
-			<div class="profile-name">${user.fullname}</div>
-			<div class="profile-role">
-			</div>
-			<div class="info-item">
-				<strong>Email:</strong> ${user.email}
-			</div>
-			<div class="info-item">
-				<strong>Số điện thoại:</strong>
-				<c:choose>
-					<c:when test="${not empty user.phoneNumber}">
-                ${user.phone}
-            </c:when>
-					<c:otherwise>
-                ********45
-            </c:otherwise>
-				</c:choose>
-			</div>
+	<div class="profile-info">
+		<div class="profile-name">Admin</div>
+		<div class="profile-role"></div>
+		<div class="info-item">
+			<strong>Email:</strong>admin@gmail.com
 		</div>
+		<div class="info-item">
+			<strong>Số điện thoại:</strong> ********45
+		</div>
+	</div>
 	</div>
 
 	<script src="https://kit.fontawesome.com/your-fontawesome-kit.js"

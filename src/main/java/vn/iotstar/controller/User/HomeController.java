@@ -9,6 +9,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import vn.iotstar.entity.*;
 import vn.iotstar.impl.service.*;
 import vn.iotstar.service.*;
@@ -25,7 +26,7 @@ public class HomeController extends HttpServlet {
 		String url = req.getRequestURI();
 		req.setCharacterEncoding("UTF-8");
 		resp.setCharacterEncoding("UTF-8");
-
+		
 		// 1. Lấy danh sách loại bài báo
 		List<PaperType> paperType = paperTypeService.getAllPaperTypes();
 		req.setAttribute("paperType", paperType);

@@ -39,7 +39,6 @@ public class LoginController extends HttpServlet {
 		System.out.println("Redirect after login: " + redirectUrl);
 
 		try {
-			// TH: Admin cố định
 			if ("admin@gmail.com".equals(email) && "admin123".equals(password)) {
 				User admin = new User();
 				admin.setEmail(email);

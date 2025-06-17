@@ -87,13 +87,13 @@ public class SavePaperController extends HttpServlet {
 		papers.add(paper);
 		favoriteList.setPapers(papers);
 
-		boolean saved = favoriteListService.save(favoriteList);
-		if (saved) {
-			resp.sendRedirect(req.getContextPath() + "/favorite/list");
-		} else {
-			req.setAttribute("error", "Lưu danh sách yêu thích thất bại!");
-			req.getRequestDispatcher("/somePage.jsp").forward(req, resp);
-		}
+//		boolean saved = favoriteListService.save(favoriteList);
+//		if (saved) {
+//			resp.sendRedirect(req.getContextPath() + "/favorite/list");
+//		} else {
+//			req.setAttribute("error", "Lưu danh sách yêu thích thất bại!");
+//			req.getRequestDispatcher("/somePage.jsp").forward(req, resp);
+//		}
 	}
 
 }
